@@ -1,0 +1,70 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard - {{ etablissement.nom }}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+  <!-- Navigation -->
+  <nav class="bg-[#002147] shadow-lg sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <img src="/logo.svg" alt="SA2R" class="h-10">
+          <div class="border-l border-white/30 pl-3">
+            <h1 class="text-white font-bold text-lg">{{ etablissement.nom }}</h1>
+            <p class="text-blue-200 text-xs">Code: {{ etablissement.code }}</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-6">
+          <a href="{% url 'etablissement_dashboard' %}" class="text-white border-b-2 border-green-400 text-sm flex items-center gap-2 pb-1">
+            <i class="fas fa-home"></i> Dashboard
+          </a>
+          <a href="{% url 'etablissement_historique' %}" class="text-white/80 hover:text-white transition text-sm flex items-center gap-2">
+            <i class="fas fa-history"></i> Historique
+          </a>
+          <a href="{% url 'etablissement_formulaire' %}" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition font-semibold text-sm flex items-center gap-2 shadow-lg">
+            <i class="fas fa-file-alt"></i> Soumettre Rapport
+          </a>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="text-blue-200 text-xs">{{ request.user.username }}</span>
+          <a href="{% url 'logout' %}" class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs rounded transition">
+            <i class="fas fa-sign-out-alt mr-1"></i>Déconnexion
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="bg-gradient-to-r from-[#002147] to-blue-900 rounded-lg shadow-lg p-8 mb-8 text-white">
+      <h2 class="text-3xl font-bold mb-2">Bienvenue sur SA2R</h2>
+      <p class="text-blue-200 text-lg">{{ etablissement.nom }}</p>
+      {% if annee_active %}<p class="text-blue-100 mt-4">Année: <span class="font-semibold">{{ annee_active.annee }}</span></p>{% endif %}
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <a href="{% url 'etablissement_formulaire' %}" class="block bg-white rounded-lg shadow-md hover:shadow-xl transition p-6 border-l-4 border-green-600">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+            <i class="fas fa-file-alt text-2xl text-green-600"></i>
+          </div>
+          <h3 class="text-xl font-bold text-gray-800">Soumettre un Rapport</h3>
+        </div>
+        <p class="text-gray-600">Remplissez le formulaire avec les 8 sections</p>
+      </a>
+      <a href="{% url 'etablissement_historique' %}" class="block bg-white rounded-lg shadow-md hover:shadow-xl transition p-6 border-l-4 border-blue-600">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+            <i class="fas fa-history text-2xl text-blue-600"></i>
+          </div>
+          <h3 class="text-xl font-bold text-gray-800">Consulter l'Historique</h3>
+        </div>
+        <p class="text-gray-600">Visualisez tous vos rapports soumis</p>
+      </a>
+    </div>
+  </div>
+</body>
+</html>

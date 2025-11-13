@@ -1,0 +1,527 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Historique - {{ etablissement.nom }}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'sa2r-blue': '#002147',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @media print { .no-print { display: none; } }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <!-- Header fixe -->
+  <header class="bg-[#002147] border-b border-blue-900/30 sticky top-0 z-50 no-print">
+    <div class="max-w-7xl mx-auto px-4 py-3">
+      <div class="flex items-center justify-between">
+        <!-- Logo et nom -->
+        <div class="flex items-center gap-3">
+          <img src="/logo.svg" alt="SA2R" class="h-10">
+          <div class="border-l border-white/30 pl-3">
+            <p class="text-sm font-bold text-white">{{ etablissement.nom }}</p>
+            <p class="text-xs text-blue-200">Code: {{ etablissement.code }}</p>
+          </div>
+        </div>
+
+        <!-- Navigation centrale -->
+        <div class="flex items-center gap-6">
+          <a href="{% url 'etablissement_dashboard' %}" class="text-white/80 hover:text-white transition text-sm flex items-center gap-2">
+            <i class="fas fa-home"></i>
+            Dashboard
+          </a>
+          
+          <a href="{% url 'etablissement_formulaire' %}" class="text-white/80 hover:text-white transition text-sm flex items-center gap-2">
+            <i class="fas fa-file-alt"></i>
+            Soumettre Rapport
+          </a>
+          
+          <a href="{% url 'etablissement_historique' %}" class="text-white border-b-2 border-green-400 text-sm flex items-center gap-2 pb-1">
+            <i class="fas fa-history"></i>
+            Historique
+          </a>
+        </div>
+
+        <!-- Actions droite -->
+        <div class="flex items-center gap-3">
+          <span class="text-blue-200 text-xs">{{ request.user.username }}</span>
+          <a href="{% url 'logout' %}" class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs rounded transition">
+            <i class="fas fa-sign-out-alt mr-1"></i>Quitter
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Contenu principal -->
+  <main class="py-4">
+    <div class="max-w-7xl mx-auto px-4">
+      <!-- Selecteur annee -->
+      <div class="bg-white rounded-lg shadow-sm border p-4 mb-4 flex items-center justify-between no-print">
+        <div class="flex items-center gap-4 flex-1">
+          <i class="fas fa-calendar-alt text-2xl text-blue-600"></i>
+          <div class="flex-1">
+            <label class="block text-xs font-semibold text-gray-700 mb-1">Selectionner une annee scolaire :</label>
+            <select id="annee-selector" onchange="chargerHistorique()" class="w-full md:w-96 px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500">
+              <option value="">-- Choisir une annee --</option>
+              {% for annee in annees %}
+              <option value="{{ annee.id }}" {% if annee.active %}selected{% endif %}>
+                {{ annee.annee }} {% if annee.active %}(Annee active){% endif %}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <button onclick="window.print()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded transition flex items-center gap-2">
+          <i class="fas fa-print"></i> Imprimer
+        </button>
+      </div>
+
+      <!-- Zone de chargement -->
+      <div id="loading" class="text-center py-12">
+        <i class="fas fa-spinner fa-spin text-4xl text-blue-600"></i>
+        <p class="mt-4 text-sm text-gray-600">Chargement de l'historique...</p>
+      </div>
+
+      <!-- Message aucune donnee -->
+      <div id="no-data" class="bg-yellow-50 border border-yellow-200 rounded-lg p-8 text-center hidden">
+        <i class="fas fa-info-circle text-4xl text-yellow-600 mb-3"></i>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">Aucune donnee disponible</h3>
+        <p class="text-sm text-gray-600 mb-4">Selectionnez une annee scolaire pour afficher l'historique</p>
+        <a href="{% url 'etablissement_formulaire' %}" class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded transition">
+          <i class="fas fa-plus"></i> Creer un rapport
+        </a>
+      </div>
+
+      <!-- Contenu historique -->
+      <div id="historique-content" class="space-y-4 hidden">
+        
+        <!-- Section 1: Contact -->
+        <div id="section-1" class="bg-white rounded-lg shadow-sm border hidden">
+          <div class="px-4 py-3 bg-gradient-to-r from-blue-50 to-blue-100 border-b flex items-center gap-3">
+            <div class="w-8 h-8 bg-blue-600 rounded flex items-center justify-center flex-shrink-0">
+              <i class="fas fa-user text-white text-sm"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-gray-800">Section 1 - Informations Contact</h3>
+              <p class="text-xs text-gray-600">Directeur et infrastructures de base</p>
+            </div>
+          </div>
+          <div id="section-1-content" class="p-4"></div>
+        </div>
+
+        <!-- Section 2: Structures -->
+        <div id="section-2" class="bg-white rounded-lg shadow-sm border hidden">
+          <div class="px-4 py-3 bg-gradient-to-r from-purple-50 to-purple-100 border-b flex items-center gap-3">
+            <div class="w-8 h-8 bg-purple-600 rounded flex items-center justify-center flex-shrink-0">
+              <i class="fas fa-users text-white text-sm"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-gray-800">Section 2 - Structures Associatives</h3>
+              <p class="text-xs text-gray-600">CGE, G.Scol, CLPE, AEMO, Union Sportive</p>
+            </div>
+          </div>
+          <div id="section-2-content" class="p-4"></div>
+        </div>
+
+        <!-- Section 3: Effectifs -->
+        <div id="section-3" class="bg-white rounded-lg shadow-sm border hidden">
+          <div class="px-4 py-3 bg-gradient-to-r from-green-50 to-green-100 border-b flex items-center gap-3">
+            <div class="w-8 h-8 bg-green-600 rounded flex items-center justify-center flex-shrink-0">
+              <i class="fas fa-child text-white text-sm"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-gray-800">Section 3 - Effectifs Eleves</h3>
+              <p class="text-xs text-gray-600">CI, CP, CE1, CE2, CM1, CM2</p>
+            </div>
+          </div>
+          <div id="section-3-content" class="p-4"></div>
+        </div>
+
+        <!-- Section 4: Resultats -->
+        <div id="section-4" class="bg-white rounded-lg shadow-sm border hidden">
+          <div class="px-4 py-3 bg-gradient-to-r from-yellow-50 to-yellow-100 border-b flex items-center gap-3">
+            <div class="w-8 h-8 bg-yellow-600 rounded flex items-center justify-center flex-shrink-0">
+              <i class="fas fa-award text-white text-sm"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-gray-800">Section 4 - Resultats Examens</h3>
+              <p class="text-xs text-gray-600">CFEE et Entree 6eme</p>
+            </div>
+          </div>
+          <div id="section-4-content" class="p-4"></div>
+        </div>
+
+        <!-- Section 5: Personnel -->
+        <div id="section-5" class="bg-white rounded-lg shadow-sm border hidden">
+          <div class="px-4 py-3 bg-gradient-to-r from-orange-50 to-orange-100 border-b flex items-center gap-3">
+            <div class="w-8 h-8 bg-orange-600 rounded flex items-center justify-center flex-shrink-0">
+              <i class="fas fa-chalkboard-teacher text-white text-sm"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-gray-800">Section 5 - Effectifs Personnel</h3>
+              <p class="text-xs text-gray-600">Instituteurs, vacataires, volontaires</p>
+            </div>
+          </div>
+          <div id="section-5-content" class="p-4"></div>
+        </div>
+
+        <!-- Section 6: Infrastructures -->
+        <div id="section-6" class="bg-white rounded-lg shadow-sm border hidden">
+          <div class="px-4 py-3 bg-gradient-to-r from-red-50 to-red-100 border-b flex items-center gap-3">
+            <div class="w-8 h-8 bg-red-600 rounded flex items-center justify-center flex-shrink-0">
+              <i class="fas fa-building text-white text-sm"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-gray-800">Section 6 - Infrastructures et Equipements</h3>
+              <p class="text-xs text-gray-600">Batiments, materiels, mobilier, equipements, manuels</p>
+            </div>
+          </div>
+          <div id="section-6-content" class="p-4"></div>
+        </div>
+
+        <!-- Section 7: Budget -->
+        <div id="section-7" class="bg-white rounded-lg shadow-sm border hidden">
+          <div class="px-4 py-3 bg-gradient-to-r from-emerald-50 to-emerald-100 border-b flex items-center gap-3">
+            <div class="w-8 h-8 bg-emerald-600 rounded flex items-center justify-center flex-shrink-0">
+              <i class="fas fa-coins text-white text-sm"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-gray-800">Section 7 - Budget</h3>
+              <p class="text-xs text-gray-600">Sources de financement</p>
+            </div>
+          </div>
+          <div id="section-7-content" class="p-4"></div>
+        </div>
+
+        <!-- Section 8: Observations -->
+        <div id="section-8" class="bg-white rounded-lg shadow-sm border hidden">
+          <div class="px-4 py-3 bg-gradient-to-r from-indigo-50 to-indigo-100 border-b flex items-center gap-3">
+            <div class="w-8 h-8 bg-indigo-600 rounded flex items-center justify-center flex-shrink-0">
+              <i class="fas fa-comment-alt text-white text-sm"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-gray-800">Section 8 - Observations et Besoins</h3>
+              <p class="text-xs text-gray-600">Remarques generales</p>
+            </div>
+          </div>
+          <div id="section-8-content" class="p-4"></div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Fonction principale de chargement
+    function chargerHistorique() {
+      const anneeId = document.getElementById('annee-selector').value;
+      if (!anneeId) {
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('historique-content').classList.add('hidden');
+        return;
+      }
+
+      document.getElementById('loading').classList.remove('hidden');
+      document.getElementById('historique-content').classList.add('hidden');
+      document.getElementById('no-data').classList.add('hidden');
+
+      fetch(`/api/formulaire/historique/?annee_id=${anneeId}`)
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById('loading').classList.add('hidden');
+          
+          if (!data.success || !data.data) {
+            document.getElementById('no-data').classList.remove('hidden');
+            return;
+          }
+
+          document.getElementById('historique-content').classList.remove('hidden');
+          afficherToutesSections(data.data);
+        })
+        .catch(err => {
+          console.error('Erreur:', err);
+          document.getElementById('loading').classList.add('hidden');
+          document.getElementById('no-data').classList.remove('hidden');
+        });
+    }
+
+    // Afficher toutes les sections
+    function afficherToutesSections(data) {
+      if (data.section_1 && Object.keys(data.section_1).length > 2) afficherSection1(data.section_1);
+      if (data.section_2 && Object.keys(data.section_2).length > 2) afficherSection2(data.section_2);
+      if (data.section_3 && Object.keys(data.section_3).length > 2) afficherSection3(data.section_3);
+      if (data.section_4 && Object.keys(data.section_4).length > 2) afficherSection4(data.section_4);
+      if (data.section_5 && Object.keys(data.section_5).length > 2) afficherSection5(data.section_5);
+      if (data.section_6 && Object.keys(data.section_6).length > 2) afficherSection6(data.section_6);
+      if (data.section_7 && Object.keys(data.section_7).length > 2) afficherSection7(data.section_7);
+      if (data.section_8 && Object.keys(data.section_8).length > 2) afficherSection8(data.section_8);
+    }
+
+    // ========== SECTION 1: CONTACT ==========
+    function afficherSection1(data) {
+      const labels = {
+        'directeur_nom': 'Nom du Directeur',
+        'directeur_contact_1': 'Telephone 1',
+        'directeur_contact_2': 'Telephone 2',
+        'directeur_email': 'Email',
+        'distance': 'Distance (km)',
+        'cpe': 'CPE', 'cpe_type': 'Type CPE',
+        'cloture': 'Cloture', 'cloture_type': 'Type Cloture',
+        'eau': 'Eau', 'eau_type': 'Type Eau',
+        'electricite': 'Electricite', 'electricite_type': 'Type Electricite',
+        'internet': 'Internet', 'internet_type': 'Type Internet',
+        'cantine': 'Cantine', 'cantine_type': 'Type Cantine',
+        'langue_nationale': 'Langue Nationale',
+        'existence_projets': 'Projets',
+        'nom_autre_projet': 'Noms des Projets'
+      };
+
+      let html = '<div class="grid grid-cols-3 gap-3">';
+      Object.entries(data).forEach(([key, value]) => {
+        if (['id', 'etablissement', 'annee_scolaire', 'created_at', 'updated_at'].includes(key)) return;
+        
+        const label = labels[key] || key;
+        let displayValue = value || '-';
+        if (typeof value === 'boolean') displayValue = value ? 'Oui' : 'Non';
+        
+        html += `
+          <div class="bg-gray-50 p-2 rounded border border-gray-200">
+            <label class="block text-[10px] font-semibold text-gray-600 uppercase mb-1">${label}</label>
+            <p class="text-xs text-gray-800">${displayValue}</p>
+          </div>
+        `;
+      });
+      html += '</div>';
+
+      document.getElementById('section-1-content').innerHTML = html;
+      document.getElementById('section-1').classList.remove('hidden');
+    }
+
+    // ========== SECTION 2: STRUCTURES ASSOCIATIVES ==========
+    function afficherSection2(data) {
+      const structures = {
+        'CGE': ['cge_existence', 'cge_nb_membres', 'cge_date_creation', 'cge_dernier_renouvellement', 'cge_nb_reunions', 'cge_tenue_ag', 'cge_maitrise_textes', 'cge_connaissance_budget'],
+        'G.Scol': ['gscolaire_existence', 'gscolaire_nb_membres', 'gscolaire_date_creation', 'gscolaire_dernier_renouvellement', 'gscolaire_nb_reunions', 'gscolaire_tenue_ag', 'gscolaire_maitrise_textes', 'gscolaire_connaissance_budget'],
+        'CLPE': ['clpe_existence', 'clpe_nb_membres', 'clpe_nb_reunions', 'clpe_tenue_session'],
+        'AEMO': ['aemo_existence', 'aemo_nb_membres', 'aemo_nb_reunions', 'aemo_tenue_session'],
+        'Union Sportive': ['union_sportive_existence', 'union_sportive_nb_membres', 'union_sportive_nb_reunions', 'union_sportive_organisation_activites']
+      };
+
+      const labels = {
+        'existence': 'Existe', 'nb_membres': 'Membres', 'date_creation': 'Cree le', 'dernier_renouvellement': 'Renouvellement',
+        'nb_reunions': 'Reunions', 'tenue_ag': 'AG', 'maitrise_textes': 'Maitrise textes', 'connaissance_budget': 'Connaissance budget',
+        'tenue_session': 'Sessions', 'organisation_activites': 'Activites'
+      };
+
+      let html = '<div class="grid grid-cols-2 gap-3">';
+      Object.entries(structures).forEach(([name, fields]) => {
+        html += `<div class="bg-gradient-to-r from-purple-50 to-purple-100 p-3 rounded-lg border border-purple-200">
+          <h4 class="text-xs font-bold text-purple-800 mb-2 border-b border-purple-300 pb-1">${name}</h4>
+          <div class="grid grid-cols-2 gap-2">`;
+        
+        fields.forEach(field => {
+          const shortKey = field.replace(/^(cge|gscolaire|clpe|aemo|union_sportive)_/, '');
+          const label = labels[shortKey] || shortKey;
+          let value = data[field] || '-';
+          if (typeof value === 'boolean') value = value ? 'Oui' : 'Non';
+          
+          html += `<div class="text-[10px]"><span class="text-gray-600 font-semibold">${label}:</span> <span class="text-gray-900">${value}</span></div>`;
+        });
+        
+        html += '</div></div>';
+      });
+      html += '</div>';
+
+      document.getElementById('section-2-content').innerHTML = html;
+      document.getElementById('section-2').classList.remove('hidden');
+    }
+
+    // ========== SECTION 3: EFFECTIFS ==========
+    function afficherSection3(data) {
+      const niveaux = ['ci', 'cp', 'ce1', 'ce2', 'cm1', 'cm2'];
+      const categories = [
+        {group: 'Effectifs', fields: ['nouveaux_g', 'nouveaux_f', 'anciens_g', 'anciens_f', 'total_g', 'total_f', 'total']},
+        {group: 'Redoublants', fields: ['redoublants_g', 'redoublants_f', 'redoublants_total']},
+        {group: 'Abandons', fields: ['abandons_g', 'abandons_f', 'abandons_total']},
+        {group: 'Handicaps', fields: ['handicap_visuel_g', 'handicap_visuel_f', 'handicap_auditif_g', 'handicap_auditif_f', 'handicap_physique_g', 'handicap_physique_f', 'handicap_mental_g', 'handicap_mental_f']},
+        {group: 'Orphelins', fields: ['orphelins_g', 'orphelins_f', 'orphelins_total']},
+        {group: 'Sans Extrait', fields: ['sans_extrait_g', 'sans_extrait_f', 'sans_extrait_total']}
+      ];
+
+      let html = '<div class="overflow-x-auto"><table class="w-full text-[9px] border-collapse">';
+      
+      categories.forEach(cat => {
+        html += `<thead class="bg-green-100"><tr><th colspan="${niveaux.length + 1}" class="border p-1 text-left font-bold text-green-900">${cat.group}</th></tr>
+          <tr class="bg-green-50">${['Indicateur', ...niveaux.map(n => n.toUpperCase())].map(h => `<th class="border p-1">${h}</th>`).join('')}</tr></thead><tbody>`;
+        
+        cat.fields.forEach(field => {
+          html += `<tr><td class="border p-1 font-semibold bg-gray-50">${field.replace(/_/g, ' ')}</td>`;
+          niveaux.forEach(niveau => {
+            const key = `${niveau}_${field}`;
+            html += `<td class="border p-1 text-center">${data[key] || 0}</td>`;
+          });
+          html += '</tr>';
+        });
+        html += '</tbody>';
+      });
+      
+      html += '</table></div>';
+
+      document.getElementById('section-3-content').innerHTML = html;
+      document.getElementById('section-3').classList.remove('hidden');
+    }
+
+    // ========== SECTION 4: RESULTATS EXAMENS ==========
+    function afficherSection4(data) {
+      let html = '<div class="grid grid-cols-2 gap-3">';
+      
+      // CFEE
+      html += `<div class="bg-yellow-50 p-3 rounded border border-yellow-200">
+        <h4 class="font-bold text-xs text-yellow-900 mb-2">CFEE</h4>
+        <div class="space-y-1 text-[10px]">
+          <div><span class="font-semibold">Inscrits G:</span> ${data.cfee_inscrits_g || 0}</div>
+          <div><span class="font-semibold">Inscrits F:</span> ${data.cfee_inscrits_f || 0}</div>
+          <div><span class="font-semibold">Admis G:</span> ${data.cfee_admis_g || 0}</div>
+          <div><span class="font-semibold">Admis F:</span> ${data.cfee_admis_f || 0}</div>
+          <div><span class="font-semibold">Taux:</span> ${data.cfee_taux || 0}%</div>
+        </div>
+      </div>`;
+      
+      // Entree 6eme
+      html += `<div class="bg-yellow-50 p-3 rounded border border-yellow-200">
+        <h4 class="font-bold text-xs text-yellow-900 mb-2">Entree 6eme</h4>
+        <div class="space-y-1 text-[10px]">
+          <div><span class="font-semibold">Inscrits G:</span> ${data.entree_6eme_inscrits_g || 0}</div>
+          <div><span class="font-semibold">Inscrits F:</span> ${data.entree_6eme_inscrits_f || 0}</div>
+          <div><span class="font-semibold">Admis G:</span> ${data.entree_6eme_admis_g || 0}</div>
+          <div><span class="font-semibold">Admis F:</span> ${data.entree_6eme_admis_f || 0}</div>
+          <div><span class="font-semibold">Taux:</span> ${data.entree_6eme_taux || 0}%</div>
+        </div>
+      </div>`;
+      
+      html += '</div>';
+      document.getElementById('section-4-content').innerHTML = html;
+      document.getElementById('section-4').classList.remove('hidden');
+    }
+
+    // ========== SECTION 5: PERSONNEL ==========
+    function afficherSection5(data) {
+      const categories = [
+        {label: 'Instituteurs', fields: ['instituteurs_g', 'instituteurs_f']},
+        {label: 'Vacataires', fields: ['vacataires_g', 'vacataires_f']},
+        {label: 'Volontaires', fields: ['volontaires_g', 'volontaires_f']},
+        {label: 'Directeurs', fields: ['directeurs_g', 'directeurs_f']},
+        {label: 'Sous-Directeurs', fields: ['sous_directeurs_g', 'sous_directeurs_f']},
+        {label: 'Maitres Coraniques', fields: ['maitres_coraniques_g', 'maitres_coraniques_f']}
+      ];
+
+      let html = '<div class="overflow-x-auto"><table class="w-full text-[10px] border-collapse">';
+      html += '<thead class="bg-orange-100"><tr><th class="border p-2">Categorie</th><th class="border p-2">Garcons</th><th class="border p-2">Filles</th><th class="border p-2">Total</th></tr></thead><tbody>';
+      
+      categories.forEach(cat => {
+        const g = data[cat.fields[0]] || 0;
+        const f = data[cat.fields[1]] || 0;
+        html += `<tr><td class="border p-2 font-semibold bg-orange-50">${cat.label}</td>
+          <td class="border p-2 text-center">${g}</td>
+          <td class="border p-2 text-center">${f}</td>
+          <td class="border p-2 text-center font-bold">${g + f}</td></tr>`;
+      });
+      
+      html += '</tbody></table></div>';
+      document.getElementById('section-5-content').innerHTML = html;
+      document.getElementById('section-5').classList.remove('hidden');
+    }
+
+    // ========== SECTION 6: INFRASTRUCTURES ==========
+    function afficherSection6(data) {
+      const subsections = {
+        'Infrastructures': data.infrastructures || {},
+        'Materiels Didactiques': data.materiels_didactiques || {},
+        'Mobilier Scolaire': data.mobilier_scolaire || {},
+        'Equipements Informatiques': data.equipements_informatiques || {},
+        'Manuels Eleves': data.manuels_eleves || {}
+      };
+
+      let html = '<div class="space-y-3">';
+      Object.entries(subsections).forEach(([title, obj]) => {
+        html += `<div class="bg-red-50 p-3 rounded border border-red-200">
+          <h4 class="font-bold text-xs text-red-900 mb-2">${title}</h4>
+          <div class="grid grid-cols-4 gap-2">`;
+        
+        Object.entries(obj).forEach(([key, value]) => {
+          if (['id', 'etablissement', 'annee_scolaire', 'created_at', 'updated_at'].includes(key)) return;
+          html += `<div class="text-[10px]"><span class="font-semibold text-gray-700">${key.replace(/_/g, ' ')}:</span> <span class="text-gray-900">${value || 0}</span></div>`;
+        });
+        
+        html += '</div></div>';
+      });
+      html += '</div>';
+
+      document.getElementById('section-6-content').innerHTML = html;
+      document.getElementById('section-6').classList.remove('hidden');
+    }
+
+    // ========== SECTION 7: BUDGET ==========
+    function afficherSection7(data) {
+      const sources = [
+        {label: 'Transferts Etat', field: 'transferts_etat'},
+        {label: 'Collectivites Locales', field: 'collectivites_locales'},
+        {label: 'Partenaires', field: 'partenaires'},
+        {label: 'Ressources Propres', field: 'ressources_propres'},
+        {label: 'Autres Sources', field: 'autres_sources'}
+      ];
+
+      let html = '<div class="bg-emerald-50 p-4 rounded border border-emerald-200">';
+      html += '<table class="w-full text-xs"><tbody>';
+      
+      let total = 0;
+      sources.forEach(src => {
+        const value = parseFloat(data[src.field] || 0);
+        total += value;
+        html += `<tr><td class="py-1 font-semibold">${src.label}</td><td class="py-1 text-right">${value.toLocaleString()} FCFA</td></tr>`;
+      });
+      
+      html += `<tr class="border-t-2 border-emerald-400"><td class="py-2 font-bold text-emerald-900">TOTAL</td><td class="py-2 text-right font-bold text-emerald-900">${total.toLocaleString()} FCFA</td></tr>`;
+      html += '</tbody></table></div>';
+
+      document.getElementById('section-7-content').innerHTML = html;
+      document.getElementById('section-7').classList.remove('hidden');
+    }
+
+    // ========== SECTION 8: OBSERVATIONS ==========
+    function afficherSection8(data) {
+      const obs = data.observations_generales || 'Aucune observation.';
+      const html = `<div class="bg-indigo-50 p-4 rounded border border-indigo-200">
+        <p class="text-xs text-gray-800 whitespace-pre-wrap">${obs}</p>
+      </div>`;
+
+      document.getElementById('section-8-content').innerHTML = html;
+      document.getElementById('section-8').classList.remove('hidden');
+    }
+
+    // Charger automatiquement au demarrage
+    window.addEventListener('DOMContentLoaded', function() {
+      const anneeSelector = document.getElementById('annee-selector');
+      if (anneeSelector.value) {
+        chargerHistorique();
+      } else {
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('no-data').classList.remove('hidden');
+      }
+    });
+  </script>
+</body>
+</html>

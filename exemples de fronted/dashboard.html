@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Admin - SA2R{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header avec année active -->
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Dashboard Admin</h1>
+            {% if annee_active %}
+            <p class="text-sm text-gray-600 mt-1">Année scolaire: <span class="font-semibold text-[#002147]">{{ annee_active.annee }}</span></p>
+            {% else %}
+            <p class="text-sm text-red-600 mt-1">⚠️ Aucune année scolaire active</p>
+            {% endif %}
+        </div>
+        <a href="{% url 'admin_gestion_annees' %}" class="btn-primary">
+            <i class="fas fa-calendar-alt mr-2"></i>
+            Gérer les années
+        </a>
+    </div>
+
+    <!-- Statistiques principales - Design préservé -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Total Établissements -->
+        <div class="card hover:shadow-lg transition-shadow">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Total Établissements</p>
+                    <p class="text-3xl font-bold text-[#002147] mt-2">{{ stats.total_etablissements }}</p>
+                    <div class="flex items-center gap-4 mt-2 text-sm">
+                        <span class="text-green-600">
+                            <i class="fas fa-building"></i> {{ stats.etablissements_public }} Public
+                        </span>
+                        <span class="text-blue-600">
+                            <i class="fas fa-building"></i> {{ stats.etablissements_prive }} Privé
+                        </span>
+                    </div>
+                </div>
+                <div class="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-school text-2xl text-[#002147]"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Élèves -->
+        <div class="card hover:shadow-lg transition-shadow">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Total Élèves</p>
+                    <p class="text-3xl font-bold text-emerald-600 mt-2">{{ stats.total_eleves|default:"0" }}</p>
+                    <div class="flex items-center gap-4 mt-2 text-sm">
+                        <span class="text-blue-600">♂ {{ stats.total_garcons|default:"0" }}</span>
+                        <span class="text-pink-600">♀ {{ stats.total_filles|default:"0" }}</span>
+                    </div>
+                </div>
+                <div class="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-users text-2xl text-emerald-600"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Handicaps -->
+        <div class="card hover:shadow-lg transition-shadow">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Élèves Handicapés</p>
+                    <p class="text-3xl font-bold text-orange-600 mt-2">{{ stats.total_handicap_moteur|add:stats.total_handicap_visuel }}</p>
+                    <div class="flex items-center gap-2 mt-2 text-xs">
+                        <span class="text-gray-600">Moteur: {{ stats.total_handicap_moteur|default:"0" }}</span>
+                        <span class="text-gray-600">Visuel: {{ stats.total_handicap_visuel|default:"0" }}</span>
+                    </div>
+                </div>
+                <div class="w-14 h-14 bg-orange-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-wheelchair text-2xl text-orange-600"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orphelins & Sans Extrait -->
+        <div class="card hover:shadow-lg transition-shadow">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Situations Spéciales</p>
+                    <div class="mt-2">
+                        <p class="text-lg font-bold text-purple-600">
+                            <i class="fas fa-heart-broken text-sm"></i> {{ stats.total_orphelins|default:"0" }} Orphelins
+                        </p>
+                        <p class="text-lg font-bold text-amber-600 mt-1">
+                            <i class="fas fa-file-alt text-sm"></i> {{ stats.total_sans_extrait|default:"0" }} Sans extrait
+                        </p>
+                    </div>
+                </div>
+                <div class="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-exclamation-triangle text-2xl text-purple-600"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progression des soumissions -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Effectifs -->
+        <div class="card">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">Effectifs</h3>
+                <span class="text-2xl font-bold text-[#002147]">{{ stats.taux_soumission_effectifs }}%</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-3 mb-3">
+                <div class="bg-[#002147] h-3 rounded-full transition-all duration-500" style="width: {{ stats.taux_soumission_effectifs }}%"></div>
+            </div>
+            <p class="text-sm text-gray-600">{{ stats.soumissions_effectifs }} / {{ stats.total_etablissements }} établissements</p>
+        </div>
+
+        <!-- Finances -->
+        <div class="card">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">Finances</h3>
+                <span class="text-2xl font-bold text-emerald-600">{{ stats.taux_soumission_finances }}%</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-3 mb-3">
+                <div class="bg-emerald-600 h-3 rounded-full transition-all duration-500" style="width: {{ stats.taux_soumission_finances }}%"></div>
+            </div>
+            <p class="text-sm text-gray-600">{{ stats.soumissions_finances }} / {{ stats.total_etablissements }} établissements</p>
+        </div>
+
+        <!-- Personnel -->
+        <div class="card">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">Personnel</h3>
+                <span class="text-2xl font-bold text-blue-600">{{ stats.taux_soumission_personnel }}%</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-3 mb-3">
+                <div class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: {{ stats.taux_soumission_personnel }}%"></div>
+            </div>
+            <p class="text-sm text-gray-600">{{ stats.soumissions_personnel }} / {{ stats.total_etablissements }} établissements</p>
+        </div>
+    </div>
+
+    <!-- Actions rapides - Design préservé -->
+    <div class="card">
+        <h2 class="text-xl font-bold text-gray-900 mb-6">Actions Rapides</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <a href="{% url 'admin_import_donnees' %}" class="group hover:shadow-lg transition-all p-6 border-2 border-gray-200 rounded-lg hover:border-[#002147]">
+                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-[#002147] transition-colors">
+                    <i class="fas fa-file-excel text-2xl text-[#002147] group-hover:text-white"></i>
+                </div>
+                <h3 class="font-semibold text-gray-900 mb-2">Import Données</h3>
+                <p class="text-sm text-gray-600">Importer fichier Excel</p>
+            </a>
+
+            <a href="{% url 'admin_gestion_comptes' %}" class="group hover:shadow-lg transition-all p-6 border-2 border-gray-200 rounded-lg hover:border-emerald-600">
+                <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-emerald-600 transition-colors">
+                    <i class="fas fa-users-cog text-2xl text-emerald-600 group-hover:text-white"></i>
+                </div>
+                <h3 class="font-semibold text-gray-900 mb-2">Gestion Comptes</h3>
+                <p class="text-sm text-gray-600">Gérer les établissements</p>
+            </a>
+
+            <a href="{% url 'admin_suivi_progression' %}" class="group hover:shadow-lg transition-all p-6 border-2 border-gray-200 rounded-lg hover:border-blue-600">
+                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-600 transition-colors">
+                    <i class="fas fa-chart-line text-2xl text-blue-600 group-hover:text-white"></i>
+                </div>
+                <h3 class="font-semibold text-gray-900 mb-2">Suivi Progression</h3>
+                <p class="text-sm text-gray-600">État des soumissions</p>
+            </a>
+
+            <a href="{% url 'admin_controle_qualite' %}" class="group hover:shadow-lg transition-all p-6 border-2 border-gray-200 rounded-lg hover:border-amber-600">
+                <div class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-amber-600 transition-colors">
+                    <i class="fas fa-clipboard-check text-2xl text-amber-600 group-hover:text-white"></i>
+                </div>
+                <h3 class="font-semibold text-gray-900 mb-2">Contrôle Qualité</h3>
+                <p class="text-sm text-gray-600">Vérification des données</p>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
