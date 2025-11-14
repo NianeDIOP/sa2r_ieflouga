@@ -135,7 +135,6 @@ class SuiviRapportController extends Controller
             'manuelsMaitre',
             'dictionnaires',
             'materielDidactique',
-            'geometrie',
             'capitalImmobilier',
             'capitalMobilier',
             'equipementInformatique',

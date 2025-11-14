@@ -180,16 +180,6 @@ class Rapport extends Model
         return $this->hasOne(RapportDictionnaires::class);
     }
 
-    public function geometrie()
-    {
-        return $this->hasOne(RapportGeometrie::class);
-    }
-
-    public function mesure()
-    {
-        return $this->hasOne(RapportMesure::class);
-    }
-
     /**
      * Scope : Rapports d'une année scolaire
      */

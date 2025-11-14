@@ -173,13 +173,6 @@
                         <span class="flex-1">Matériel Didactique</span>
                         <i id="check-materiel-didactique" class="fas fa-check text-green-500 text-xs hidden ml-1"></i>
                     </a>
-                    {{-- Géométrie supprimé - instruments inclus dans Matériel Didactique --}}
-                    <a href="#materiel" onclick="switchToEtape(5, 'materiel')" class="flex items-center px-2 py-1.5 text-xs text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 transition rounded font-medium">
-                        <i class="fas fa-tools mr-1.5 text-gray-500"></i>
-                        <span class="flex-1">Matériel Général</span>
-                        <i id="check-materiel" class="fas fa-check text-green-500 text-xs hidden ml-1"></i>
-                    </a>
-                    {{-- Mesure supprimé - déjà dans materiel-didactique --}}
                 </div>
             </div>
 
@@ -1643,70 +1636,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Fonctions de sauvegarde pour l'Étape 5 (suite)
 // ⚠️ saveDictionnaires() est obsolète - on utilise maintenant autoSave('dictionnaires')
-
-async function saveGeometrie() {
-    const formData = new FormData();
-    
-    // Récupérer tous les champs de géométrie
-    const fields = [
-        'regles_graduees', 'equerres', 'rapporteurs', 'compas', 'metres_ruban',
-        'etat_instruments_geometrie', 'solides_geometriques', 'planches_geometrie',
-        'kit_geometrie_enseignant', 'besoins_geometrie', 'budget_estime_geometrie', 'observations_geometrie'
-    ];
-
-    fields.forEach(field => {
-        const element = document.querySelector(`[name="${field}"]`);
-        if (element) {
-            formData.append(field, element.value || '');
-        }
-    });
-
-    try {
-        await fetch('{{ route("etablissement.rapport-rentree.save-geometrie", $rapport->id) }}', {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            },
-            body: formData
-        });
-        console.log('Matériel de Géométrie sauvegardé');
-    } catch (error) {
-        console.error('Erreur lors de la sauvegarde de la géométrie:', error);
-    }
-}
-
-async function saveMesure() {
-    const formData = new FormData();
-    
-    // Récupérer tous les champs de mesure
-    const fields = [
-        'decametres', 'metres_plies', 'centimetres', 'reglets',
-        'balances_plateaux', 'balances_electroniques', 'poids_masses',
-        'recipients_gradues', 'eprouvettes', 'verres_doseurs',
-        'chronometres', 'horloges_demonstration', 'sabliers',
-        'etat_instruments_mesure', 'besoins_mesure', 'budget_estime_mesure', 'observations_mesure'
-    ];
-
-    fields.forEach(field => {
-        const element = document.querySelector(`[name="${field}"]`);
-        if (element) {
-            formData.append(field, element.value || '');
-        }
-    });
-
-    try {
-        await fetch('{{ route("etablissement.rapport-rentree.save-mesure", $rapport->id) }}', {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            },
-            body: formData
-        });
-        console.log('Matériel de Mesure sauvegardé');
-    } catch (error) {
-        console.error('Erreur lors de la sauvegarde de la mesure:', error);
-    }
-}
 
 // Fonctions de sauvegarde pour l'Étape 6
 async function saveCapitalImmobilier() {

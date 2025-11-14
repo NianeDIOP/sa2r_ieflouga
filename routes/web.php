@@ -128,10 +128,6 @@ Route::prefix('etablissement')->name('etablissement.')->middleware('auth:etablis
         ->name('rapport-rentree.save-manuels-maitre');
     Route::post('rapport-rentree/{rapport}/dictionnaires', [\App\Http\Controllers\Etablissement\RapportRentreeController::class, 'saveDictionnaires'])
         ->name('rapport-rentree.save-dictionnaires');
-    Route::post('rapport-rentree/{rapport}/geometrie', [\App\Http\Controllers\Etablissement\RapportRentreeController::class, 'saveGeometrie'])
-        ->name('rapport-rentree.save-geometrie');
-    Route::post('rapport-rentree/{rapport}/mesure', [\App\Http\Controllers\Etablissement\RapportRentreeController::class, 'saveMesure'])
-        ->name('rapport-rentree.save-mesure');
 
     // ÉTAPE 6 - Infrastructure & Équipements
     Route::post('rapport-rentree/{rapport}/capital-immobilier', [\App\Http\Controllers\Etablissement\RapportRentreeController::class, 'saveCapitalImmobilier'])
