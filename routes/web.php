@@ -5,6 +5,8 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\AnneeScolaireController;
 use App\Http\Controllers\Admin\EtablissementController;
+use App\Http\Controllers\Admin\CompteController;
+use App\Http\Controllers\Admin\SuiviRapportController;
 use App\Http\Controllers\Etablissement\DashboardController as EtablissementDashboardController;
 
 // ============================================
@@ -43,6 +45,31 @@ Route::prefix('admin')->name('admin.')->middleware('auth:admin')->group(function
         ->name('etablissements.toggle-status');
     Route::post('etablissements/{etablissement}/reset-password', [EtablissementController::class, 'resetPassword'])
         ->name('etablissements.reset-password');
+    
+    // Gestion des Comptes
+    Route::get('comptes', [CompteController::class, 'index'])->name('comptes.index');
+    Route::post('comptes/{compte}/toggle-status', [CompteController::class, 'toggleStatus'])
+        ->name('comptes.toggle-status');
+    Route::post('comptes/{compte}/update-directeur', [CompteController::class, 'updateDirecteur'])
+        ->name('comptes.update-directeur');
+    Route::post('comptes/{compte}/change-password', [CompteController::class, 'changePassword'])
+        ->name('comptes.change-password');
+    Route::post('comptes/{compte}/reset-password', [CompteController::class, 'resetPassword'])
+        ->name('comptes.reset-password');
+    Route::post('comptes/reset-all-passwords', [CompteController::class, 'resetAllPasswords'])
+        ->name('comptes.reset-all-passwords');
+    Route::get('comptes/{compte}/history', [CompteController::class, 'history'])
+        ->name('comptes.history');
+    Route::get('comptes/export', [CompteController::class, 'export'])
+        ->name('comptes.export');
+    
+    // Suivi des Rapports
+    Route::get('suivi-rapports', [SuiviRapportController::class, 'index'])->name('suivi-rapports.index');
+    Route::get('suivi-rapports/{rapport}', [SuiviRapportController::class, 'show'])->name('suivi-rapports.show');
+    Route::post('suivi-rapports/{rapport}/valider', [SuiviRapportController::class, 'valider'])
+        ->name('suivi-rapports.valider');
+    Route::post('suivi-rapports/{rapport}/rejeter', [SuiviRapportController::class, 'rejeter'])
+        ->name('suivi-rapports.rejeter');
     
     // Autres routes admin à ajouter ici
     // Route::get('import', [AdminImportController::class, 'index'])->name('import');

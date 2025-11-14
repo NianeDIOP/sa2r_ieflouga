@@ -69,6 +69,10 @@ class LoginController extends Controller
             Auth::guard('admin')->login($user, $request->filled('remember'));
             $request->session()->regenerate();
             
+            // Enregistrer la connexion
+            $user->increment('login_count');
+            $user->update(['last_login_at' => now()]);
+            
             Log::info('Login Admin Success', ['user_id' => $user->id]);
             
             return redirect()->intended(route('admin.dashboard'))
@@ -103,6 +107,10 @@ class LoginController extends Controller
         if ($user && Hash::check($password, $user->password)) {
             Auth::guard('etablissement')->login($user, $request->filled('remember'));
             $request->session()->regenerate();
+            
+            // Enregistrer la connexion
+            $user->increment('login_count');
+            $user->update(['last_login_at' => now()]);
             
             Log::info('Login Etablissement Success', ['user_id' => $user->id]);
             

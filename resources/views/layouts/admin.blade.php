@@ -100,27 +100,27 @@
                             </a>
                             
                             <!-- 2. Gestion Comptes -->
-                            <a href="#" class="block px-4 py-2.5 hover:bg-blue-50 transition-colors">
+                            <a href="{{ route('admin.comptes.index') }}" class="block px-4 py-2.5 hover:bg-blue-50 transition-colors">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                                        <i class="fas fa-users-cog text-blue-600 text-sm"></i>
+                                    <div class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-user-shield text-indigo-600 text-sm"></i>
                                     </div>
                                     <div>
                                         <p class="text-sm font-medium text-gray-900">Gestion Comptes</p>
-                                        <p class="text-xs text-gray-500">CRUD établissements</p>
+                                        <p class="text-xs text-gray-500">Comptes établissements</p>
                                     </div>
                                 </div>
                             </a>
                             
-                            <!-- 3. Suivi Progression -->
-                            <a href="#" class="block px-4 py-2.5 hover:bg-blue-50 transition-colors">
+                            <!-- 3. Suivi Rapports -->
+                            <a href="{{ route('admin.suivi-rapports.index') }}" class="block px-4 py-2.5 hover:bg-blue-50 transition-colors">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
-                                        <i class="fas fa-tasks text-indigo-600 text-sm"></i>
+                                    <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-chart-line text-purple-600 text-sm"></i>
                                     </div>
                                     <div>
-                                        <p class="text-sm font-medium text-gray-900">Suivi Progression</p>
-                                        <p class="text-xs text-gray-500">État des soumissions</p>
+                                        <p class="text-sm font-medium text-gray-900">Suivi Rapports</p>
+                                        <p class="text-xs text-gray-500">Progression & validation</p>
                                     </div>
                                 </div>
                             </a>

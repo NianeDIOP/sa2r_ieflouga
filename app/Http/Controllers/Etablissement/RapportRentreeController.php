@@ -77,6 +77,17 @@ class RapportRentreeController extends Controller
             'mesure'
         ]);
 
+        // Pré-remplir les infos directeur depuis la table users si elles n'existent pas dans le rapport
+        $user = Auth::user();
+        if (!$rapport->infoDirecteur && $user && ($user->directeur_nom || $user->directeur_telephone)) {
+            $rapport->infoDirecteur()->create([
+                'rapport_id' => $rapport->id,
+                'directeur_nom' => $user->directeur_nom,
+                'directeur_contact_1' => $user->directeur_telephone,
+            ]);
+            $rapport->load('infoDirecteur'); // Recharger la relation
+        }
+
         return view('etablissement.rapport-rentree.index', compact('rapport', 'etablissement', 'anneeScolaireActive'));
     }
 
@@ -93,10 +104,20 @@ class RapportRentreeController extends Controller
             'distance_siege' => 'nullable|numeric|min:0',
         ]);
 
+        // Sauvegarder dans la table rapport_info_directeur
         $rapport->infoDirecteur()->updateOrCreate(
             ['rapport_id' => $rapport->id],
             $validated
         );
+
+        // Synchroniser avec la table users (pour la gestion admin des comptes)
+        $user = Auth::user();
+        if ($user && $user->type === 'etablissement') {
+            $user->update([
+                'directeur_nom' => $validated['directeur_nom'] ?? $user->directeur_nom,
+                'directeur_telephone' => $validated['directeur_contact_1'] ?? $user->directeur_telephone,
+            ]);
+        }
 
         return response()->json(['success' => true, 'message' => 'Informations directeur sauvegardées']);
     }

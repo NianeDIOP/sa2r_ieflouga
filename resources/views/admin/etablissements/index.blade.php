@@ -83,50 +83,60 @@
                 </span>
             @endif
         </div>
-        <form method="GET" action="{{ route('admin.etablissements.index') }}" class="grid grid-cols-1 md:grid-cols-5 gap-3">
-            <div>
-                <input type="text" 
-                       name="search" 
-                       value="{{ request('search') }}"
-                       placeholder="Rechercher (nom, code)..." 
-                       class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#002147] focus:border-transparent">
+        <form method="GET" action="{{ route('admin.etablissements.index') }}" id="filterForm">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+                <div>
+                    <input type="text" 
+                           name="search" 
+                           value="{{ request('search') }}"
+                           placeholder="Rechercher (nom, code)..." 
+                           oninput="debounceFilter()"
+                           class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#002147] focus:border-transparent">
+                </div>
+                
+                <div>
+                    <select name="commune" 
+                            onchange="submitFilterForm()"
+                            class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#002147] focus:border-transparent">
+                        <option value="">Toutes les communes</option>
+                        @foreach($lists['communes'] as $commune)
+                            <option value="{{ $commune }}" {{ request('commune') == $commune ? 'selected' : '' }}>{{ $commune }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                
+                <div>
+                    <select name="zone" 
+                            onchange="submitFilterForm()"
+                            class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#002147] focus:border-transparent">
+                        <option value="">Toutes les zones</option>
+                        @foreach($lists['zones'] as $zone)
+                            <option value="{{ $zone }}" {{ request('zone') == $zone ? 'selected' : '' }}>{{ $zone }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                
+                <div>
+                    <select name="statut" 
+                            onchange="submitFilterForm()"
+                            class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#002147] focus:border-transparent">
+                        <option value="">Tous les statuts</option>
+                        <option value="Public" {{ request('statut') == 'Public' ? 'selected' : '' }}>Public</option>
+                        <option value="Privé" {{ request('statut') == 'Privé' ? 'selected' : '' }}>Privé</option>
+                    </select>
+                </div>
             </div>
             
-            <div>
-                <select name="commune" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#002147] focus:border-transparent">
-                    <option value="">Toutes les communes</option>
-                    @foreach($lists['communes'] as $commune)
-                        <option value="{{ $commune }}" {{ request('commune') == $commune ? 'selected' : '' }}>{{ $commune }}</option>
-                    @endforeach
-                </select>
-            </div>
-            
-            <div>
-                <select name="zone" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#002147] focus:border-transparent">
-                    <option value="">Toutes les zones</option>
-                    @foreach($lists['zones'] as $zone)
-                        <option value="{{ $zone }}" {{ request('zone') == $zone ? 'selected' : '' }}>{{ $zone }}</option>
-                    @endforeach
-                </select>
-            </div>
-            
-            <div>
-                <select name="statut" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#002147] focus:border-transparent">
-                    <option value="">Tous les statuts</option>
-                    <option value="Public" {{ request('statut') == 'Public' ? 'selected' : '' }}>Public</option>
-                    <option value="Privé" {{ request('statut') == 'Privé' ? 'selected' : '' }}>Privé</option>
-                </select>
-            </div>
-            
-            <div class="flex gap-2">
-                <button type="submit" class="flex-1 px-3 py-2 text-sm font-medium text-white bg-[#002147] rounded-lg hover:bg-blue-900 transition-colors">
-                    <i class="fas fa-search text-xs mr-1"></i>
-                    Filtrer
-                </button>
-                <a href="{{ route('admin.etablissements.index') }}" class="px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-                    <i class="fas fa-times text-xs"></i>
-                </a>
-            </div>
+            @if(request()->hasAny(['search', 'commune', 'zone', 'statut']))
+                <div class="flex justify-end">
+                    <a href="{{ route('admin.etablissements.index') }}" 
+                       class="inline-flex items-center gap-1 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                       title="Réinitialiser les filtres">
+                        <i class="fas fa-times text-xs"></i>
+                        <span>Réinitialiser</span>
+                    </a>
+                </div>
+            @endif
         </form>
     </div>
 
@@ -1065,6 +1075,19 @@ document.getElementById('importForm').addEventListener('submit', function(e) {
         closeImportModal();
     });
 });
+
+// Fonctions pour les filtres automatiques
+let filterTimeout;
+function debounceFilter() {
+    clearTimeout(filterTimeout);
+    filterTimeout = setTimeout(() => {
+        document.getElementById('filterForm').submit();
+    }, 500);
+}
+
+function submitFilterForm() {
+    document.getElementById('filterForm').submit();
+}
 </script>
 
 <!-- Bibliothèque SheetJS pour lire les fichiers Excel -->

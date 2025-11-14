@@ -48,4 +48,12 @@ class Etablissement extends Model
     {
         return $this->hasOne(\App\Models\User::class, 'code', 'code');
     }
+
+    /**
+     * Obtenir tous les rapports de l'établissement
+     */
+    public function rapports()
+    {
+        return $this->hasMany(\App\Models\Rapport::class, 'etablissement_id');
+    }
 }

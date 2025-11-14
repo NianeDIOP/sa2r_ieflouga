@@ -4,7 +4,7 @@
     @include('etablissement.rapport-rentree.partials.etape5-manuels-maitre')
     @include('etablissement.rapport-rentree.partials.etape5-dictionnaires')
     @include('etablissement.rapport-rentree.partials.etape5-materiel-didactique')
-    @include('etablissement.rapport-rentree.partials.etape5-geometrie')
+    {{-- Géométrie supprimé - déjà inclus dans materiel-didactique --}}
     {{-- Mesure supprimé - déjà dans materiel-didactique --}}
 
     <!-- Boutons de navigation -->

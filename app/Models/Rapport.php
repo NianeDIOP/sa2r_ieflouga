@@ -19,12 +19,20 @@ class Rapport extends Model
         'validated_by',
         'validated_at',
         'commentaire_validation',
+        'date_soumission',
+        'date_validation',
+        'date_rejet',
+        'motif_rejet',
+        'commentaire_admin',
     ];
 
     protected $casts = [
         'date_rapport' => 'date',
         'submitted_at' => 'datetime',
         'validated_at' => 'datetime',
+        'date_soumission' => 'datetime',
+        'date_validation' => 'datetime',
+        'date_rejet' => 'datetime',
     ];
 
     /**

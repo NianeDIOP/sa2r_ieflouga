@@ -34,6 +34,12 @@ class User extends Authenticatable
         'commune',
         'zone',
         'statut',
+        // Informations Directeur
+        'directeur_nom',
+        'directeur_telephone',
+        // Suivi Connexions
+        'last_login_at',
+        'login_count',
     ];
 
     /**
@@ -57,6 +63,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
+            'last_login_at' => 'datetime',
         ];
     }
 

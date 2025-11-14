@@ -23,7 +23,7 @@
                        min="0"
                        value="{{ $rapport->cfee?->cfee_candidats_total }}"
                        data-section="cfee"
-                       oninput="calculateCfeeTotals(); updateMaxValues(); autoSave('cfee')"
+                       oninput="calculateCfeeTotals(); autoSave('cfee')"
                        class="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                        placeholder="Ex: 35">
             </div>
@@ -36,7 +36,7 @@
                        min="0"
                        value="{{ $rapport->cfee?->cfee_candidats_filles }}"
                        data-section="cfee"
-                       oninput="calculateCfeeTotals(); updateMaxValues(); autoSave('cfee')"
+                       oninput="calculateCfeeTotals(); autoSave('cfee')"
                        class="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                        placeholder="Ex: 20">
             </div>
@@ -50,7 +50,7 @@
                        min="0"
                        value="{{ $rapport->cfee?->cfee_admis_total }}"
                        data-section="cfee"
-                       oninput="calculateCfeeTotals(); updateMaxValues(); autoSave('cfee')"
+                       oninput="calculateCfeeTotals(); autoSave('cfee')"
                        class="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                        placeholder="Ex: 30">
             </div>
@@ -64,7 +64,7 @@
                        max="999"
                        value="{{ $rapport->cfee?->cfee_admis_filles }}"
                        data-section="cfee"
-                       oninput="calculateCfeeTotals(); updateMaxValues(); autoSave('cfee')"
+                       oninput="calculateCfeeTotals(); autoSave('cfee')"
                        class="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                        placeholder="Ex: 18">
             </div>
@@ -103,111 +103,17 @@ function calculateCfeeTotals() {
     const admisesFilles = parseInt(document.getElementById('cfee_admis_filles').value) || 0;
     const admisTotal = parseInt(document.getElementById('cfee_admis_total').value) || 0;
     
-    // VALIDATION 1 : Total candidats ne peut pas être inférieur aux candidates filles
-    if (candidatsTotal < candidatesFilles) {
-        document.getElementById('cfee_candidats_total').value = candidatesFilles;
-        showValidationError('cfee_candidats_total', `Minimum : ${candidatesFilles} (nombre de filles)`);
-    } else {
-        clearValidationError('cfee_candidats_total');
-    }
-    
-    // VALIDATION 2 : Total admis ne peut pas être inférieur aux admises filles
-    if (admisTotal < admisesFilles) {
-        document.getElementById('cfee_admis_total').value = admisesFilles;
-        showValidationError('cfee_admis_total', `Minimum : ${admisesFilles} (nombre de filles)`);
-    } else {
-        clearValidationError('cfee_admis_total');
-    }
-    
-    // VALIDATION 3 : Empêcher admis > candidats
-    const candidatsTotalFinal = Math.max(candidatsTotal, candidatesFilles);
-    const admisesTotalFinal = Math.max(admisTotal, admisesFilles);
-    
-    if (admisesFilles > candidatesFilles) {
-        document.getElementById('cfee_admis_filles').value = candidatesFilles;
-        showValidationError('cfee_admis_filles', `Maximum : ${candidatesFilles} candidates filles`);
-    } else {
-        clearValidationError('cfee_admis_filles');
-    }
-    
-    if (admisesTotalFinal > candidatsTotalFinal) {
-        document.getElementById('cfee_admis_total').value = candidatsTotalFinal;
-        showValidationError('cfee_admis_total', `Maximum : ${candidatsTotalFinal} candidats total`);
-    } else if (admisTotal >= admisesFilles) {
-        clearValidationError('cfee_admis_total');
-    }
-    
-    // Utiliser les valeurs corrigées pour les calculs
-    const candidatsTotalCorrige = Math.max(candidatsTotal, candidatesFilles);
-    const admisesTotalCorrige = Math.min(Math.max(admisTotal, admisesFilles), candidatsTotalCorrige);
-    const admisFillesCorrige = Math.min(admisesFilles, candidatesFilles);
-    
-    // Calculer les garçons automatiquement (pour affichage seulement)
-    const candidatsGarcons = Math.max(0, candidatsTotalCorrige - candidatesFilles);
-    const admisGarcons = Math.max(0, admisesTotalCorrige - admisFillesCorrige);
-    
-    // Calculer les taux de réussite (sans garçons)
-    const tauxFilles = candidatesFilles > 0 ? (admisFillesCorrige / candidatesFilles * 100) : 0;
-    const tauxGeneral = candidatsTotalCorrige > 0 ? (admisesTotalCorrige / candidatsTotalCorrige * 100) : 0;
+    // Calculer les taux de réussite
+    const tauxFilles = candidatesFilles > 0 ? (admisesFilles / candidatesFilles * 100) : 0;
+    const tauxGeneral = candidatsTotal > 0 ? (admisTotal / candidatsTotal * 100) : 0;
     
     // Mettre à jour l'affichage des taux
     document.getElementById('cfee_taux_filles').textContent = tauxFilles.toFixed(1) + '%';
     document.getElementById('cfee_taux_general').textContent = tauxGeneral.toFixed(1) + '%';
 }
 
-function showValidationError(inputId, message) {
-    const input = document.getElementById(inputId);
-    input.style.borderColor = '#ef4444';
-    input.style.backgroundColor = '#fef2f2';
-    input.title = message;
-    
-    // Afficher tooltip temporaire
-    if (!input.nextElementSibling || !input.nextElementSibling.classList.contains('validation-tooltip')) {
-        const tooltip = document.createElement('div');
-        tooltip.className = 'validation-tooltip text-xs text-red-600 mt-1';
-        tooltip.textContent = message;
-        input.parentNode.appendChild(tooltip);
-        
-        setTimeout(() => {
-            if (tooltip.parentNode) {
-                tooltip.parentNode.removeChild(tooltip);
-            }
-        }, 3000);
-    }
-}
-
-function clearValidationError(inputId) {
-    const input = document.getElementById(inputId);
-    input.style.borderColor = '';
-    input.style.backgroundColor = '';
-    input.title = '';
-    
-    const tooltip = input.parentNode.querySelector('.validation-tooltip');
-    if (tooltip) {
-        tooltip.parentNode.removeChild(tooltip);
-    }
-}
-
 // Initialisation au chargement
 document.addEventListener('DOMContentLoaded', function() {
     calculateCfeeTotals();
-    updateMaxValues();
 });
-
-function updateMaxValues() {
-    // Mettre à jour les attributs max et min pour empêcher la saisie illogique
-    const candidatesFilles = parseInt(document.getElementById('cfee_candidats_filles').value) || 0;
-    const candidatsTotal = parseInt(document.getElementById('cfee_candidats_total').value) || 0;
-    
-    // Total candidats doit être au moins égal au nombre de filles
-    document.getElementById('cfee_candidats_total').setAttribute('min', candidatesFilles);
-    
-    // Total admis doit être au moins égal au nombre de filles admises
-    const admisesFilles = parseInt(document.getElementById('cfee_admis_filles').value) || 0;
-    document.getElementById('cfee_admis_total').setAttribute('min', admisesFilles);
-    
-    // Les admis ne peuvent pas dépasser les candidats
-    document.getElementById('cfee_admis_filles').setAttribute('max', candidatesFilles);
-    document.getElementById('cfee_admis_total').setAttribute('max', Math.max(candidatsTotal, candidatesFilles));
-}
 </script>
