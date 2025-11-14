@@ -72,9 +72,7 @@ class RapportRentreeController extends Controller
             'equipementInformatique',
             'manuelsEleves',
             'manuelsMaitre',
-            'dictionnaires',
-            'geometrie',
-            'mesure'
+            'dictionnaires'
         ]);
 
         // Pré-remplir les infos directeur depuis la table users si elles n'existent pas dans le rapport
@@ -1125,5 +1123,51 @@ class RapportRentreeController extends Controller
         );
 
         return response()->json(['success' => true, 'message' => 'Équipements Informatiques sauvegardés']);
+    }
+
+    /**
+     * Soumettre le rapport pour validation
+     */
+    public function submit(Request $request, Rapport $rapport)
+    {
+        // Vérifier que le rapport appartient à l'établissement de l'utilisateur
+        if ($rapport->etablissement_id !== Auth::user()->etablissement_id) {
+            abort(403);
+        }
+
+        // Vérifier que le rapport est modifiable
+        if (!$rapport->estModifiable()) {
+            return back()->with('error', 'Ce rapport ne peut plus être modifié.');
+        }
+
+        // Valider le commentaire (optionnel)
+        $request->validate([
+            'commentaire_etablissement' => 'nullable|string|max:1000'
+        ]);
+
+        // Mettre à jour le statut
+        $rapport->update([
+            'statut' => 'soumis',
+            'date_soumission' => now(),
+            'submitted_by' => Auth::id(),
+            'submitted_at' => now(),
+            'commentaire_validation' => $request->commentaire_etablissement
+        ]);
+
+        // Enregistrer dans l'historique
+        \App\Models\RapportHistorique::create([
+            'rapport_id' => $rapport->id,
+            'user_id' => Auth::id(),
+            'action' => 'soumission',
+            'ancien_statut' => 'brouillon',
+            'nouveau_statut' => 'soumis',
+            'commentaire' => $request->commentaire_etablissement
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Rapport soumis avec succès. Il sera examiné par l\'administration.',
+            'redirect' => route('etablissement.rapport-rentree.historique.index')
+        ]);
     }
 }

@@ -41,7 +41,6 @@ class SuiviRapportController extends Controller
                 'manuelsMaitre',
                 'dictionnaires',
                 'materielDidactique',
-                'geometrie',
                 'capitalImmobilier',
                 'capitalMobilier',
                 'equipementInformatique'
@@ -158,20 +157,21 @@ class SuiviRapportController extends Controller
 
         DB::transaction(function() use ($rapport, $request) {
             $rapport->update([
-                'statut' => 'valide',
+                'statut' => 'validé',
                 'date_validation' => now(),
+                'validated_by' => auth()->id(),
+                'validated_at' => now(),
                 'commentaire_admin' => $request->commentaire_admin
             ]);
 
             // Enregistrer dans l'historique
             \App\Models\RapportHistorique::create([
                 'rapport_id' => $rapport->id,
+                'user_id' => auth()->id(),
                 'action' => 'validation',
-                'statut_avant' => 'soumis',
-                'statut_apres' => 'valide',
-                'commentaire' => $request->commentaire_admin,
-                'user_type' => 'admin',
-                'user_id' => auth()->id()
+                'ancien_statut' => 'soumis',
+                'nouveau_statut' => 'validé',
+                'commentaire' => $request->commentaire_admin
             ]);
         });
 
@@ -192,7 +192,7 @@ class SuiviRapportController extends Controller
 
         DB::transaction(function() use ($rapport, $request) {
             $rapport->update([
-                'statut' => 'rejete',
+                'statut' => 'rejeté',
                 'date_rejet' => now(),
                 'motif_rejet' => $request->motif_rejet
             ]);
@@ -200,12 +200,11 @@ class SuiviRapportController extends Controller
             // Enregistrer dans l'historique
             \App\Models\RapportHistorique::create([
                 'rapport_id' => $rapport->id,
+                'user_id' => auth()->id(),
                 'action' => 'rejet',
-                'statut_avant' => 'soumis',
-                'statut_apres' => 'rejete',
-                'commentaire' => $request->motif_rejet,
-                'user_type' => 'admin',
-                'user_id' => auth()->id()
+                'ancien_statut' => 'soumis',
+                'nouveau_statut' => 'rejeté',
+                'commentaire' => $request->motif_rejet
             ]);
         });
 
@@ -334,7 +333,7 @@ class SuiviRapportController extends Controller
              $rapport->personnelEnseignant->total_personnel_hommes > 0 ||
              $rapport->personnelEnseignant->total_personnel_femmes > 0);
 
-        // ÉTAPE 5: Matériel Pédagogique (5 sous-sections)
+        // ÉTAPE 5: Matériel Pédagogique (4 sous-sections)
         $etape5_manuels_eleves = $rapport->manuelsEleves && 
             $rapport->manuelsEleves->count() > 0 && 
             ($rapport->manuelsEleves->sum('lc_francais') > 0 ||
@@ -357,10 +356,8 @@ class SuiviRapportController extends Controller
             ($rapport->materielDidactique->globe_total > 0 || 
              $rapport->materielDidactique->cartes_murales_total > 0 ||
              $rapport->materielDidactique->planches_illustrees_total > 0 ||
-             $rapport->materielDidactique->kit_materiel_scientifique_total > 0);
-        
-        $etape5_geometrie = $rapport->materielDidactique !== null && 
-            ($rapport->materielDidactique->regle_plate_total > 0 || 
+             $rapport->materielDidactique->kit_materiel_scientifique_total > 0 ||
+             $rapport->materielDidactique->regle_plate_total > 0 || 
              $rapport->materielDidactique->equerre_total > 0 ||
              $rapport->materielDidactique->compas_total > 0 ||
              $rapport->materielDidactique->rapporteur_total > 0);
@@ -563,13 +560,6 @@ class SuiviRapportController extends Controller
                 'complete' => $etape5_materiel,
                 'icon' => 'fa-graduation-cap',
                 'color' => 'green',
-                'etape' => 5
-            ],
-            'geometrie' => [
-                'nom' => 'Matériel de Géométrie',
-                'complete' => $etape5_geometrie,
-                'icon' => 'fa-drafting-compass',
-                'color' => 'teal',
                 'etape' => 5
             ],
             

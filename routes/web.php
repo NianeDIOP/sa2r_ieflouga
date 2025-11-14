@@ -87,53 +87,83 @@ Route::prefix('etablissement')->name('etablissement.')->middleware('auth:etablis
     Route::get('rapport-rentree', [\App\Http\Controllers\Etablissement\RapportRentreeController::class, 'index'])
         ->name('rapport-rentree.index');
     
-    // ÉTAPE 1 - Sauvegarde AJAX
+    // ÉTAPE 1 - Sauvegarde AJAX (avec vérification modifiable)
     Route::post('rapport-rentree/{rapport}/info-directeur', [\App\Http\Controllers\Etablissement\RapportRentreeController::class, 'saveInfoDirecteur'])
+        ->middleware('rapport.modifiable')
         ->name('rapport-rentree.save-info-directeur');
     Route::post('rapport-rentree/{rapport}/infrastructures', [\App\Http\Controllers\Etablissement\RapportRentreeController::class, 'saveInfrastructures'])
+        ->middleware('rapport.modifiable')
         ->name('rapport-rentree.save-infrastructures');
     Route::post('rapport-rentree/{rapport}/structures-communautaires', [\App\Http\Controllers\Etablissement\RapportRentreeController::class, 'saveStructuresCommunautaires'])
+        ->middleware('rapport.modifiable')
         ->name('rapport-rentree.save-structures-communautaires');
     Route::post('rapport-rentree/{rapport}/langues-projets', [\App\Http\Controllers\Etablissement\RapportRentreeController::class, 'saveLanguesProjets'])
+        ->middleware('rapport.modifiable')
         ->name('rapport-rentree.save-langues-projets');
     Route::post('rapport-rentree/{rapport}/ressources-financieres', [\App\Http\Controllers\Etablissement\RapportRentreeController::class, 'saveRessourcesFinancieres'])
+        ->middleware('rapport.modifiable')
         ->name('rapport-rentree.save-ressources-financieres');
     
     // ÉTAPE 2 - Effectifs
     Route::post('rapport-rentree/{rapport}/effectifs', [\App\Http\Controllers\Etablissement\RapportRentreeController::class, 'saveEffectifs'])
+        ->middleware('rapport.modifiable')
         ->name('rapport-rentree.save-effectifs');
 
     // ÉTAPE 3 - Examens
     Route::post('rapport-rentree/{rapport}/recrutement-ci', [\App\Http\Controllers\Etablissement\RapportRentreeController::class, 'saveRecrutementCi'])
+        ->middleware('rapport.modifiable')
         ->name('rapport-rentree.save-recrutement-ci');
     Route::post('rapport-rentree/{rapport}/cmg', [\App\Http\Controllers\Etablissement\RapportRentreeController::class, 'saveCmg'])
+        ->middleware('rapport.modifiable')
         ->name('rapport-rentree.save-cmg');
     Route::post('rapport-rentree/{rapport}/cfee', [\App\Http\Controllers\Etablissement\RapportRentreeController::class, 'saveCfee'])
+        ->middleware('rapport.modifiable')
         ->name('rapport-rentree.save-cfee');
     Route::post('rapport-rentree/{rapport}/entree-sixieme', [\App\Http\Controllers\Etablissement\RapportRentreeController::class, 'saveEntreeSixieme'])
+        ->middleware('rapport.modifiable')
         ->name('rapport-rentree.save-entree-sixieme');
 
     // ÉTAPE 4 - Personnel Enseignant
     Route::post('rapport-rentree/{rapport}/personnel', [\App\Http\Controllers\Etablissement\RapportRentreeController::class, 'savePersonnel'])
+        ->middleware('rapport.modifiable')
         ->name('rapport-rentree.save-personnel');
 
     // ÉTAPE 5 - Matériel Pédagogique
     Route::post('rapport-rentree/{rapport}/materiel', [\App\Http\Controllers\Etablissement\RapportRentreeController::class, 'saveMateriel'])
+        ->middleware('rapport.modifiable')
         ->name('rapport-rentree.save-materiel');
     Route::post('rapport-rentree/{rapport}/materiel-didactique', [\App\Http\Controllers\Etablissement\RapportRentreeController::class, 'saveMaterielDidactique'])
+        ->middleware('rapport.modifiable')
         ->name('rapport-rentree.save-materiel-didactique');
     Route::post('rapport-rentree/{rapport}/manuels-eleves', [\App\Http\Controllers\Etablissement\RapportRentreeController::class, 'saveManuelsEleves'])
+        ->middleware('rapport.modifiable')
         ->name('rapport-rentree.save-manuels-eleves');
     Route::post('rapport-rentree/{rapport}/manuels-maitre', [\App\Http\Controllers\Etablissement\RapportRentreeController::class, 'saveManuelsMaitre'])
+        ->middleware('rapport.modifiable')
         ->name('rapport-rentree.save-manuels-maitre');
     Route::post('rapport-rentree/{rapport}/dictionnaires', [\App\Http\Controllers\Etablissement\RapportRentreeController::class, 'saveDictionnaires'])
+        ->middleware('rapport.modifiable')
         ->name('rapport-rentree.save-dictionnaires');
 
     // ÉTAPE 6 - Infrastructure & Équipements
     Route::post('rapport-rentree/{rapport}/capital-immobilier', [\App\Http\Controllers\Etablissement\RapportRentreeController::class, 'saveCapitalImmobilier'])
+        ->middleware('rapport.modifiable')
         ->name('rapport-rentree.save-capital-immobilier');
     Route::post('rapport-rentree/{rapport}/capital-mobilier', [\App\Http\Controllers\Etablissement\RapportRentreeController::class, 'saveCapitalMobilier'])
+        ->middleware('rapport.modifiable')
         ->name('rapport-rentree.save-capital-mobilier');
     Route::post('rapport-rentree/{rapport}/equipements-informatiques', [\App\Http\Controllers\Etablissement\RapportRentreeController::class, 'saveEquipementsInformatiques'])
+        ->middleware('rapport.modifiable')
         ->name('rapport-rentree.save-equipements-informatiques');
+
+    // Soumettre le rapport (seulement pour brouillon ou rejeté)
+    Route::post('rapport-rentree/{rapport}/submit', [\App\Http\Controllers\Etablissement\RapportRentreeController::class, 'submit'])
+        ->middleware('rapport.modifiable')
+        ->name('rapport-rentree.submit');
+
+    // Historique des rapports
+    Route::get('rapport-rentree/historique', [\App\Http\Controllers\Etablissement\RapportHistoriqueController::class, 'index'])
+        ->name('rapport-rentree.historique.index');
+    Route::get('rapport-rentree/historique/{rapport}', [\App\Http\Controllers\Etablissement\RapportHistoriqueController::class, 'show'])
+        ->name('rapport-rentree.historique.show');
 });

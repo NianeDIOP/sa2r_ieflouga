@@ -4882,6 +4882,188 @@ function validateEquipementsInformatiques() {
 
 </script>
 
+<!-- Bouton Flottant pour Soumettre le Rapport -->
+@if($rapport->statut === 'brouillon' || $rapport->statut === 'rejeté')
+<div id="submit-rapport-btn" class="fixed bottom-8 right-8 z-50" style="display: none;">
+    <button type="button" 
+            class="bg-gradient-to-r from-emerald-600 to-green-600 text-white px-8 py-4 rounded-full shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300 flex items-center gap-3 font-bold text-lg"
+            onclick="showSubmitModal()">
+        <i class="fas fa-paper-plane text-2xl"></i>
+        <span>Soumettre le Rapport</span>
+    </button>
+</div>
+
+<!-- Modal de Soumission du Rapport -->
+<div id="submitModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+    <div class="bg-white rounded-lg shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="bg-gradient-to-r from-emerald-600 to-green-600 text-white px-6 py-4 rounded-t-lg">
+            <h3 class="text-2xl font-bold flex items-center gap-3">
+                <i class="fas fa-paper-plane"></i>
+                <span>Soumettre le Rapport de Rentrée</span>
+            </h3>
+            <p class="text-emerald-100 mt-1">Année Scolaire {{ $rapport->annee_scolaire }}</p>
+        </div>
+
+        <div class="p-6">
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+                <div class="flex items-start">
+                    <i class="fas fa-info-circle text-blue-500 text-xl mt-1 mr-3"></i>
+                    <div>
+                        <p class="font-semibold text-blue-900 mb-2">Important :</p>
+                        <ul class="text-sm text-blue-800 space-y-1">
+                            <li>• Une fois soumis, le rapport ne pourra plus être modifié</li>
+                            <li>• Votre rapport sera examiné par l'administration</li>
+                            <li>• Vous recevrez une notification de validation ou de rejet</li>
+                            <li>• En cas de rejet, vous pourrez le modifier à nouveau</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <form id="submitRapportForm">
+                <div class="mb-6">
+                    <label for="commentaire_etablissement" class="block text-sm font-medium text-gray-700 mb-2">
+                        Commentaire (Optionnel)
+                    </label>
+                    <textarea 
+                        id="commentaire_etablissement" 
+                        name="commentaire_etablissement" 
+                        rows="5" 
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
+                        placeholder="Ajoutez un commentaire ou des observations sur ce rapport..." 
+                        maxlength="1000"></textarea>
+                    <p class="text-xs text-gray-500 mt-1">Maximum 1000 caractères</p>
+                </div>
+
+                <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 mb-6">
+                    <div class="flex items-start">
+                        <i class="fas fa-exclamation-triangle text-yellow-600 text-lg mt-1 mr-3"></i>
+                        <div class="text-sm text-yellow-800">
+                            <p class="font-semibold mb-1">Vérification finale</p>
+                            <p>Assurez-vous que toutes les informations saisies sont exactes et complètes avant de soumettre.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3">
+                    <button type="button" 
+                            onclick="hideSubmitModal()" 
+                            class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-medium">
+                        <i class="fas fa-times mr-2"></i>
+                        Annuler
+                    </button>
+                    <button type="submit" 
+                            id="btnConfirmSubmit"
+                            class="px-8 py-3 bg-gradient-to-r from-emerald-600 to-green-600 text-white rounded-lg hover:from-emerald-700 hover:to-green-700 transition font-bold shadow-lg">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        Confirmer la Soumission
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endif
+
+<script>
+// Afficher le bouton de soumission si toutes les étapes sont complétées
+function checkIfCanSubmit() {
+    // Vérifier si toutes les étapes ont la coche verte
+    const allStepsComplete = 
+        document.getElementById('check-step-1')?.classList.contains('text-green-500') &&
+        document.getElementById('check-step-2')?.classList.contains('text-green-500') &&
+        document.getElementById('check-step-3')?.classList.contains('text-green-500') &&
+        document.getElementById('check-step-4')?.classList.contains('text-green-500') &&
+        document.getElementById('check-step-5')?.classList.contains('text-green-500') &&
+        document.getElementById('check-step-6')?.classList.contains('text-green-500');
+
+    const submitBtn = document.getElementById('submit-rapport-btn');
+    if (submitBtn) {
+        submitBtn.style.display = allStepsComplete ? 'block' : 'none';
+    }
+}
+
+// Appeler cette fonction après chaque sauvegarde et au chargement
+document.addEventListener('DOMContentLoaded', function() {
+    checkIfCanSubmit();
+    // Vérifier toutes les 2 secondes
+    setInterval(checkIfCanSubmit, 2000);
+});
+
+function showSubmitModal() {
+    document.getElementById('submitModal').classList.remove('hidden');
+}
+
+function hideSubmitModal() {
+    document.getElementById('submitModal').classList.add('hidden');
+    document.getElementById('commentaire_etablissement').value = '';
+}
+
+// Soumettre le rapport
+document.getElementById('submitRapportForm')?.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const btn = document.getElementById('btnConfirmSubmit');
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Soumission en cours...';
+
+    try {
+        const response = await fetch(`/etablissement/rapport-rentree/{{ $rapport->id }}/submit`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+                commentaire_etablissement: document.getElementById('commentaire_etablissement').value
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            // Notification de succès
+            Swal.fire({
+                title: 'Rapport Soumis !',
+                html: `
+                    <div class="text-left">
+                        <p class="mb-3">${data.message}</p>
+                        <div class="bg-green-50 border border-green-200 rounded p-3">
+                            <p class="text-sm text-green-800">
+                                <i class="fas fa-check-circle mr-2"></i>
+                                Votre rapport a été transmis à l'administration pour validation.
+                            </p>
+                        </div>
+                    </div>
+                `,
+                icon: 'success',
+                confirmButtonText: 'Voir l\'historique',
+                confirmButtonColor: '#059669'
+            }).then((result) => {
+                if (result.isConfirmed && data.redirect) {
+                    window.location.href = data.redirect;
+                } else {
+                    window.location.reload();
+                }
+            });
+        } else {
+            throw new Error(data.message || 'Erreur lors de la soumission');
+        }
+    } catch (error) {
+        console.error('Erreur:', error);
+        Swal.fire({
+            title: 'Erreur',
+            text: error.message || 'Une erreur est survenue lors de la soumission du rapport',
+            icon: 'error',
+            confirmButtonColor: '#dc2626'
+        });
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    }
+});
+</script>
+
 @endpush
 
 @endsection
