@@ -4882,18 +4882,8 @@ function validateEquipementsInformatiques() {
 
 </script>
 
-<!-- Bouton Flottant pour Soumettre le Rapport -->
-@if($rapport->statut === 'brouillon' || $rapport->statut === 'rejeté')
-<div id="submit-rapport-btn" class="fixed bottom-8 right-8 z-50" style="display: none;">
-    <button type="button" 
-            class="bg-gradient-to-r from-emerald-600 to-green-600 text-white px-8 py-4 rounded-full shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300 flex items-center gap-3 font-bold text-lg"
-            onclick="showSubmitModal()">
-        <i class="fas fa-paper-plane text-2xl"></i>
-        <span>Soumettre le Rapport</span>
-    </button>
-</div>
-
 <!-- Modal de Soumission du Rapport -->
+@if($rapport->statut === 'brouillon' || $rapport->statut === 'rejeté')
 <div id="submitModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
     <div class="bg-white rounded-lg shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
         <div class="bg-gradient-to-r from-emerald-600 to-green-600 text-white px-6 py-4 rounded-t-lg">
@@ -4966,30 +4956,6 @@ function validateEquipementsInformatiques() {
 @endif
 
 <script>
-// Afficher le bouton de soumission si toutes les étapes sont complétées
-function checkIfCanSubmit() {
-    // Vérifier si toutes les étapes ont la coche verte
-    const allStepsComplete = 
-        document.getElementById('check-step-1')?.classList.contains('text-green-500') &&
-        document.getElementById('check-step-2')?.classList.contains('text-green-500') &&
-        document.getElementById('check-step-3')?.classList.contains('text-green-500') &&
-        document.getElementById('check-step-4')?.classList.contains('text-green-500') &&
-        document.getElementById('check-step-5')?.classList.contains('text-green-500') &&
-        document.getElementById('check-step-6')?.classList.contains('text-green-500');
-
-    const submitBtn = document.getElementById('submit-rapport-btn');
-    if (submitBtn) {
-        submitBtn.style.display = allStepsComplete ? 'block' : 'none';
-    }
-}
-
-// Appeler cette fonction après chaque sauvegarde et au chargement
-document.addEventListener('DOMContentLoaded', function() {
-    checkIfCanSubmit();
-    // Vérifier toutes les 2 secondes
-    setInterval(checkIfCanSubmit, 2000);
-});
-
 function showSubmitModal() {
     document.getElementById('submitModal').classList.remove('hidden');
 }
