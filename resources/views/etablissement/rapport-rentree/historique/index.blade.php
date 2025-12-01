@@ -1,209 +1,262 @@
-@extends('layouts.app')
+@extends('layouts.etablissement')
 
 @section('title', 'Historique des Rapports')
 
 @section('content')
-<div class="container-fluid py-4">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h2 class="mb-0"><i class="fas fa-history me-2"></i>Historique des Rapports de Rentrée</h2>
-            <p class="text-muted">{{ $etablissement->etablissement }}</p>
-        </div>
-    </div>
+<div class="flex h-[calc(100vh-3.5rem)] bg-gray-50">
+    
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 overflow-y-auto">
+        <div class="max-w-7xl mx-auto p-4 space-y-4">
+            
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-history text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold text-gray-900">Historique des Rapports</h1>
+                        <p class="text-xs text-gray-600">{{ $etablissement->etablissement }}</p>
+                    </div>
+                </div>
+                <a href="{{ route('etablissement.rapport-rentree.index') }}" 
+                   class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition text-sm font-semibold">
+                    <i class="fas fa-arrow-left mr-2"></i>Retour
+                </a>
+            </div>
 
-    @if($rapports->isEmpty())
-    <div class="alert alert-info">
-        <i class="fas fa-info-circle me-2"></i>
-        Aucun rapport soumis pour le moment.
-    </div>
-    @else
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
+            <!-- Filtre par année -->
+            <div class="bg-white rounded-lg border border-gray-200 p-4 mb-4">
+                <form method="GET" action="{{ route('etablissement.rapport-rentree.historique.index') }}" class="flex items-center gap-4">
+                    <div class="flex-1">
+                        <label for="annee" class="block text-xs font-semibold text-gray-700 mb-1">
+                            <i class="fas fa-calendar-alt text-emerald-600 mr-1"></i>
+                            Filtrer par année scolaire
+                        </label>
+                        <select name="annee" id="annee" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                onchange="this.form.submit()">
+                            <option value="">📚 Toutes les années</option>
+                            @foreach($anneesDisponibles as $annee)
+                                <option value="{{ $annee->annee }}" {{ $anneeSelectionnee == $annee->annee ? 'selected' : '' }}>
+                                    {{ $annee->annee }} {{ $annee->is_active ? '(Active)' : '' }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @if($anneeSelectionnee)
+                    <div class="pt-6">
+                        <a href="{{ route('etablissement.rapport-rentree.historique.index') }}" 
+                           class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm">
+                            <i class="fas fa-times mr-1"></i>Réinitialiser
+                        </a>
+                    </div>
+                    @endif
+                </form>
+                @if($anneeSelectionnee)
+                <div class="mt-2 text-xs text-gray-600">
+                    <i class="fas fa-filter mr-1"></i>
+                    Affichage des rapports pour l'année <strong>{{ $anneeSelectionnee }}</strong>
+                </div>
+                @endif
+            </div>
+
+            @if($rapports->isEmpty())
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <p class="text-sm text-blue-800">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    Aucun rapport soumis pour le moment.
+                </p>
+            </div>
+            @else
+            <!-- Tableau -->
+            <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
                         <tr>
-                            <th>Année Scolaire</th>
-                            <th>Date de Soumission</th>
-                            <th>Statut</th>
-                            <th>Soumis par</th>
-                            <th>Dernière Modification</th>
-                            <th>Actions</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700">Année</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700">Soumission</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700">Statut</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700">Par</th>
+                            <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700">Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="divide-y divide-gray-200">
                         @foreach($rapports as $rapport)
-                        <tr>
-                            <td><strong>{{ $rapport->annee_scolaire }}</strong></td>
-                            <td>
-                                @if($rapport->date_soumission)
-                                    {{ $rapport->date_soumission->format('d/m/Y à H:i') }}
-                                @else
-                                    -
-                                @endif
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-3 text-sm font-semibold text-gray-900">{{ $rapport->annee_scolaire }}</td>
+                            <td class="px-4 py-3 text-xs text-gray-600">
+                                {{ $rapport->date_soumission ? $rapport->date_soumission->format('d/m/Y H:i') : '-' }}
                             </td>
-                            <td>
+                            <td class="px-4 py-3">
                                 @if($rapport->statut === 'soumis')
-                                    <span class="badge bg-warning text-dark">
-                                        <i class="fas fa-clock me-1"></i>En attente
+                                    <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs font-semibold rounded">
+                                        <i class="fas fa-clock"></i> En attente
                                     </span>
                                 @elseif($rapport->statut === 'validé')
-                                    <span class="badge bg-success">
-                                        <i class="fas fa-check-circle me-1"></i>Validé
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded">
+                                        <i class="fas fa-check-circle"></i> Validé
                                     </span>
                                 @elseif($rapport->statut === 'rejeté')
-                                    <span class="badge bg-danger">
-                                        <i class="fas fa-times-circle me-1"></i>Rejeté
+                                    <span class="px-2 py-1 bg-red-100 text-red-800 text-xs font-semibold rounded">
+                                        <i class="fas fa-times-circle"></i> Rejeté
                                     </span>
                                 @endif
                             </td>
-                            <td>
-                                @if($rapport->soumis_par)
-                                    {{ $rapport->soumis_par->name }}
-                                @else
-                                    -
-                                @endif
+                            <td class="px-4 py-3 text-xs text-gray-600">
+                                @php
+                                    $soumission = $rapport->historique->where('action', 'soumission')->first();
+                                @endphp
+                                {{ $soumission?->user?->name ?? ($rapport->soumis_par?->name ?? '-') }}
                             </td>
-                            <td>{{ $rapport->updated_at->format('d/m/Y à H:i') }}</td>
-                            <td>
-                                <a href="{{ route('etablissement.rapport-rentree.historique.show', $rapport) }}" 
-                                   class="btn btn-sm btn-primary" 
-                                   title="Voir le rapport">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                                <a href="{{ route('etablissement.rapport-rentree.historique.show', $rapport) }}?print=1" 
-                                   target="_blank"
-                                   class="btn btn-sm btn-secondary" 
-                                   title="Imprimer">
-                                    <i class="fas fa-print"></i>
-                                </a>
-
-                                @if($rapport->statut === 'rejeté' && $rapport->motif_rejet)
-                                <button type="button" 
-                                        class="btn btn-sm btn-danger" 
-                                        data-bs-toggle="modal" 
-                                        data-bs-target="#motifRejetModal{{ $rapport->id }}"
-                                        title="Voir le motif de rejet">
-                                    <i class="fas fa-exclamation-triangle"></i>
-                                </button>
-
-                                <!-- Modal Motif de Rejet -->
-                                <div class="modal fade" id="motifRejetModal{{ $rapport->id }}" tabindex="-1">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header bg-danger text-white">
-                                                <h5 class="modal-title">
-                                                    <i class="fas fa-exclamation-triangle me-2"></i>
-                                                    Motif de Rejet
-                                                </h5>
-                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <p class="mb-2"><strong>Date de rejet :</strong> {{ $rapport->date_rejet?->format('d/m/Y à H:i') }}</p>
-                                                <p class="mb-2"><strong>Motif :</strong></p>
-                                                <div class="alert alert-light">
-                                                    {{ $rapport->motif_rejet }}
-                                                </div>
-                                                @if($rapport->commentaire_admin)
-                                                <p class="mb-2"><strong>Commentaire administrateur :</strong></p>
-                                                <div class="alert alert-light">
-                                                    {{ $rapport->commentaire_admin }}
-                                                </div>
-                                                @endif
-                                            </div>
-                                            <div class="modal-footer">
-                                                <a href="{{ route('etablissement.rapport-rentree.index') }}" class="btn btn-primary">
-                                                    <i class="fas fa-edit me-2"></i>Modifier le rapport
-                                                </a>
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                                            </div>
-                                        </div>
-                                    </div>
+                            <td class="px-4 py-3 text-center">
+                                <div class="flex items-center justify-center gap-2">
+                                    <a href="{{ route('etablissement.rapport-rentree.historique.show', $rapport) }}" 
+                                       class="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs"
+                                       title="Voir">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{{ route('etablissement.rapport-rentree.historique.excel', $rapport) }}" 
+                                       class="px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-xs"
+                                       title="Télécharger Excel">
+                                        <i class="fas fa-file-excel"></i>
+                                    </a>
+                                    <a href="{{ route('etablissement.rapport-rentree.historique.show', $rapport) }}?print=1" 
+                                       target="_blank"
+                                       class="px-2 py-1 bg-gray-600 text-white rounded hover:bg-gray-700 text-xs"
+                                       title="Imprimer">
+                                        <i class="fas fa-print"></i>
+                                    </a>
+                                    @if($rapport->statut === 'rejeté' && $rapport->motif_rejet)
+                                    <button onclick="showMotif{{ $rapport->id }}()" 
+                                            class="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-xs"
+                                            title="Motif rejet">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                    </button>
+                                    @endif
                                 </div>
-                                @endif
                             </td>
                         </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
-        </div>
-    </div>
 
-    <!-- Historique détaillé -->
-    <div class="row mt-4">
-        @foreach($rapports as $rapport)
-        <div class="col-md-6 mb-3">
-            <div class="card shadow-sm">
-                <div class="card-header bg-light">
-                    <strong>{{ $rapport->annee_scolaire }}</strong>
-                    @if($rapport->statut === 'validé')
-                        <span class="badge bg-success float-end">Validé</span>
-                    @elseif($rapport->statut === 'soumis')
-                        <span class="badge bg-warning text-dark float-end">En attente</span>
-                    @else
-                        <span class="badge bg-danger float-end">Rejeté</span>
-                    @endif
-                </div>
-                <div class="card-body">
-                    <h6 class="mb-3"><i class="fas fa-timeline me-2"></i>Chronologie</h6>
-                    <div class="timeline">
-                        @foreach($rapport->historique->sortByDesc('created_at') as $h)
-                        <div class="timeline-item mb-3">
-                            <div class="d-flex">
-                                <div class="flex-shrink-0">
+            <!-- Chronologie -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                @foreach($rapports as $rapport)
+                <div class="bg-white rounded-lg border border-gray-200">
+                    <div class="bg-gray-50 px-4 py-2.5 border-b flex items-center justify-between">
+                        <span class="text-sm font-bold text-gray-900">{{ $rapport->annee_scolaire }}</span>
+                        @if($rapport->statut === 'validé')
+                            <span class="px-2 py-0.5 bg-green-100 text-green-800 text-xs font-semibold rounded">Validé</span>
+                        @elseif($rapport->statut === 'soumis')
+                            <span class="px-2 py-0.5 bg-purple-100 text-purple-800 text-xs font-semibold rounded">En attente</span>
+                        @else
+                            <span class="px-2 py-0.5 bg-red-100 text-red-800 text-xs font-semibold rounded">Rejeté</span>
+                        @endif
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xs font-semibold text-gray-700 mb-3">
+                            <i class="fas fa-history text-emerald-600 mr-1"></i>
+                            Chronologie
+                        </h3>
+                        <div class="space-y-2">
+                            @foreach($rapport->historique->sortByDesc('created_at') as $h)
+                            <div class="flex gap-2 pb-2 border-b border-gray-100 last:border-0">
+                                <div class="flex-shrink-0 mt-0.5">
                                     @if($h->action === 'soumission')
-                                        <i class="fas fa-paper-plane text-primary"></i>
+                                        <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-paper-plane text-blue-600" style="font-size: 10px;"></i>
+                                        </div>
                                     @elseif($h->action === 'validation')
-                                        <i class="fas fa-check-circle text-success"></i>
+                                        <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-check-circle text-green-600" style="font-size: 10px;"></i>
+                                        </div>
                                     @elseif($h->action === 'rejet')
-                                        <i class="fas fa-times-circle text-danger"></i>
+                                        <div class="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-times-circle text-red-600" style="font-size: 10px;"></i>
+                                        </div>
                                     @else
-                                        <i class="fas fa-edit text-info"></i>
+                                        <div class="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-edit text-gray-600" style="font-size: 10px;"></i>
+                                        </div>
                                     @endif
                                 </div>
-                                <div class="flex-grow-1 ms-3">
-                                    <div class="small text-muted">{{ $h->created_at->format('d/m/Y à H:i') }}</div>
-                                    <div><strong>{{ ucfirst($h->action) }}</strong></div>
-                                    <div class="small">
-                                        Par : {{ $h->user->name ?? 'Système' }}
-                                    </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="text-xs text-gray-500">{{ $h->created_at->format('d/m/Y H:i') }}</div>
+                                    <div class="text-sm font-semibold text-gray-900 capitalize">{{ $h->action }}</div>
+                                    <div class="text-xs text-gray-600">Par : {{ $h->user->name ?? 'Système' }}</div>
                                     @if($h->commentaire)
-                                    <div class="small text-muted mt-1">
-                                        <em>"{{ $h->commentaire }}"</em>
+                                    <div class="text-xs text-gray-500 italic mt-1 bg-gray-50 rounded px-2 py-1">
+                                        "{{ $h->commentaire }}"
                                     </div>
                                     @endif
                                 </div>
                             </div>
+                            @endforeach
                         </div>
-                        @endforeach
                     </div>
                 </div>
+
+                <!-- Modal Rejet -->
+                @if($rapport->statut === 'rejeté' && $rapport->motif_rejet)
+                <div id="motifModal{{ $rapport->id }}" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center" onclick="if(event.target === this) hideMotif{{ $rapport->id }}()">
+                    <div class="bg-white rounded-lg border border-gray-200 w-full max-w-md mx-4">
+                        <div class="bg-red-600 text-white px-4 py-3 rounded-t-lg flex items-center justify-between">
+                            <h3 class="font-bold text-sm">Motif de Rejet</h3>
+                            <button onclick="hideMotif{{ $rapport->id }}()" class="text-white hover:text-gray-200">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="p-4">
+                            <div class="mb-3">
+                                <p class="text-xs text-gray-600 mb-1">Date de rejet</p>
+                                <p class="text-sm font-semibold">{{ $rapport->date_rejet?->format('d/m/Y H:i') }}</p>
+                            </div>
+                            <div class="mb-3">
+                                <p class="text-xs text-gray-600 mb-1">Motif</p>
+                                <div class="bg-red-50 border border-red-200 rounded-lg p-3 text-sm">
+                                    {{ $rapport->motif_rejet }}
+                                </div>
+                            </div>
+                            @if($rapport->commentaire_admin)
+                            <div class="mb-3">
+                                <p class="text-xs text-gray-600 mb-1">Commentaire admin</p>
+                                <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm">
+                                    {{ $rapport->commentaire_admin }}
+                                </div>
+                            </div>
+                            @endif
+                            <div class="flex justify-end gap-2 pt-3 border-t">
+                                <button onclick="hideMotif{{ $rapport->id }}()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 text-sm font-semibold">
+                                    Fermer
+                                </button>
+                                <a href="{{ route('etablissement.rapport-rentree.index') }}" class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 text-sm font-semibold">
+                                    <i class="fas fa-edit mr-1"></i>Modifier
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <script>
+                function showMotif{{ $rapport->id }}() {
+                    document.getElementById('motifModal{{ $rapport->id }}').classList.remove('hidden');
+                    document.getElementById('motifModal{{ $rapport->id }}').classList.add('flex');
+                }
+                function hideMotif{{ $rapport->id }}() {
+                    document.getElementById('motifModal{{ $rapport->id }}').classList.add('hidden');
+                    document.getElementById('motifModal{{ $rapport->id }}').classList.remove('flex');
+                }
+                </script>
+                @endif
+                @endforeach
             </div>
+            @endif
+            
         </div>
-        @endforeach
-    </div>
-    @endif
-
-    <div class="mt-4">
-        <a href="{{ route('etablissement.rapport-rentree.index') }}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left me-2"></i>Retour au formulaire
-        </a>
-    </div>
+    </main>
+    
 </div>
-
-<style>
-.timeline {
-    position: relative;
-}
-
-.timeline-item {
-    padding-left: 10px;
-    border-left: 2px solid #e9ecef;
-}
-
-.timeline-item:last-child {
-    border-left: 2px solid transparent;
-}
-</style>
 @endsection

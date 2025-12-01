@@ -27,22 +27,27 @@
                     <a href="#info-directeur" class="flex items-center px-2 py-1.5 text-xs text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 transition rounded font-medium">
                         <i class="fas fa-user mr-1.5 text-gray-500"></i>
                         <span class="flex-1">Info Directeur</span>
+                        <i id="check-info-directeur" class="fas fa-check-circle text-emerald-500 text-xs hidden ml-1"></i>
                     </a>
                     <a href="#infrastructures" class="flex items-center px-2 py-1.5 text-xs text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 transition rounded font-medium">
                         <i class="fas fa-building mr-1.5 text-gray-500"></i>
                         <span class="flex-1">Infrastructures</span>
+                        <i id="check-infrastructures" class="fas fa-check-circle text-emerald-500 text-xs hidden ml-1"></i>
                     </a>
                     <a href="#structures" class="flex items-center px-2 py-1.5 text-xs text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 transition rounded font-medium">
                         <i class="fas fa-users mr-1.5 text-gray-500"></i>
                         <span class="flex-1">Structures Comm.</span>
+                        <i id="check-structures" class="fas fa-check-circle text-emerald-500 text-xs hidden ml-1"></i>
                     </a>
                     <a href="#langues" class="flex items-center px-2 py-1.5 text-xs text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 transition rounded font-medium">
                         <i class="fas fa-language mr-1.5 text-gray-500"></i>
                         <span class="flex-1">Langues & Projets</span>
+                        <i id="check-langues" class="fas fa-check-circle text-emerald-500 text-xs hidden ml-1"></i>
                     </a>
                     <a href="#finances" class="flex items-center px-2 py-1.5 text-xs text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 transition rounded font-medium">
                         <i class="fas fa-coins mr-1.5 text-gray-500"></i>
                         <span class="flex-1">Ressources Finance.</span>
+                        <i id="check-finances" class="fas fa-check-circle text-emerald-500 text-xs hidden ml-1"></i>
                     </a>
                 </div>
             </div>
@@ -58,26 +63,32 @@
                     <a href="#nb-classes" onclick="switchToEtape(2)" class="flex items-center px-2 py-1.5 text-xs text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 transition rounded font-medium">
                         <i class="fas fa-door-open mr-1.5 text-gray-500"></i>
                         <span class="flex-1">Nombre Classes</span>
+                        <i id="check-nb-classes" class="fas fa-check-circle text-emerald-500 text-xs hidden ml-1"></i>
                     </a>
                     <a href="#effectifs-totaux" onclick="switchToEtape(2)" class="flex items-center px-2 py-1.5 text-xs text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 transition rounded font-medium">
                         <i class="fas fa-users mr-1.5 text-gray-500"></i>
                         <span class="flex-1">Effectifs Totaux</span>
+                        <i id="check-effectifs-totaux" class="fas fa-check-circle text-emerald-500 text-xs hidden ml-1"></i>
                     </a>
                     <a href="#redoublants" onclick="switchToEtape(2)" class="flex items-center px-2 py-1.5 text-xs text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 transition rounded font-medium">
                         <i class="fas fa-redo mr-1.5 text-gray-500"></i>
                         <span class="flex-1">Redoublants</span>
+                        <i id="check-redoublants" class="fas fa-check-circle text-emerald-500 text-xs hidden ml-1"></i>
                     </a>
                     <a href="#abandons" onclick="switchToEtape(2)" class="flex items-center px-2 py-1.5 text-xs text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 transition rounded font-medium">
                         <i class="fas fa-user-times mr-1.5 text-gray-500"></i>
                         <span class="flex-1">Abandons</span>
+                        <i id="check-abandons" class="fas fa-check-circle text-emerald-500 text-xs hidden ml-1"></i>
                     </a>
                     <a href="#handicaps" onclick="switchToEtape(2)" class="flex items-center px-2 py-1.5 text-xs text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 transition rounded font-medium">
                         <i class="fas fa-wheelchair mr-1.5 text-gray-500"></i>
                         <span class="flex-1">Handicaps</span>
+                        <i id="check-handicaps" class="fas fa-check-circle text-emerald-500 text-xs hidden ml-1"></i>
                     </a>
                     <a href="#situations-speciales" onclick="switchToEtape(2)" class="flex items-center px-2 py-1.5 text-xs text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 transition rounded font-medium">
                         <i class="fas fa-exclamation-triangle mr-1.5 text-gray-500"></i>
                         <span class="flex-1">Situations Spéc.</span>
+                        <i id="check-situations-speciales" class="fas fa-check-circle text-emerald-500 text-xs hidden ml-1"></i>
                     </a>
                 </div>
             </div>
@@ -93,18 +104,22 @@
                     <a href="#cmg" onclick="switchToEtape(3, 'cmg')" class="flex items-center px-2 py-1.5 text-xs text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 transition rounded font-medium">
                         <i class="fas fa-users mr-1.5 text-gray-500"></i>
                         <span class="flex-1">CMG</span>
+                        <i id="check-cmg" class="fas fa-check-circle text-emerald-500 text-xs hidden ml-1"></i>
                     </a>
                     <a href="#cfee" onclick="switchToEtape(3, 'cfee')" class="flex items-center px-2 py-1.5 text-xs text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 transition rounded font-medium">
                         <i class="fas fa-graduation-cap mr-1.5 text-gray-500"></i>
                         <span class="flex-1">CFEE</span>
+                        <i id="check-cfee" class="fas fa-check-circle text-emerald-500 text-xs hidden ml-1"></i>
                     </a>
                     <a href="#entree-sixieme" onclick="switchToEtape(3, 'entree-sixieme')" class="flex items-center px-2 py-1.5 text-xs text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 transition rounded font-medium">
                         <i class="fas fa-door-open mr-1.5 text-gray-500"></i>
                         <span class="flex-1">Entrée Sixième</span>
+                        <i id="check-entree-sixieme" class="fas fa-check-circle text-emerald-500 text-xs hidden ml-1"></i>
                     </a>
                     <a href="#recrutement-ci" onclick="switchToEtape(3, 'recrutement-ci')" class="flex items-center px-2 py-1.5 text-xs text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 transition rounded font-medium">
                         <i class="fas fa-user-plus mr-1.5 text-gray-500"></i>
                         <span class="flex-1">Recrutement CI</span>
+                        <i id="check-recrutement-ci" class="fas fa-check-circle text-emerald-500 text-xs hidden ml-1"></i>
                     </a>
                 </div>
             </div>
@@ -929,6 +944,18 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 10);
         });
     });
+    
+    // =================== DÉSACTIVATION SI RAPPORT SOUMIS ===================
+    @if($rapport->statut !== 'brouillon' && $rapport->statut !== 'rejeté')
+    // Désactiver tous les champs si le rapport n'est pas en brouillon ou rejeté
+    document.querySelectorAll('input, select, textarea').forEach(el => {
+        if (el.type !== 'button' && el.type !== 'submit') {
+            el.disabled = true;
+            el.classList.add('bg-gray-100', 'cursor-not-allowed');
+        }
+    });
+    @endif
+    // =================== FIN DÉSACTIVATION ===================
     
     // =================== FIN VALIDATION GLOBALE ===================
     
@@ -1848,11 +1875,17 @@ function calculateEquipementsInformatiquesTotals() {
     else if (utilisation) tauxUtilisation = 30;
     
     // Mettre à jour l'affichage
-    document.getElementById('total-ordinateurs').textContent = totalOrdinateurs;
-    document.getElementById('equipements-audiovisuels').textContent = equipementsAudiovisuels;
-    document.getElementById('niveau-connectivite').textContent = niveauConnectivite;
-    document.getElementById('ratio-eleve-ordinateur').textContent = ratioEleveOrdinateur + ':1';
-    document.getElementById('taux-utilisation').textContent = tauxUtilisation + '%';
+    const totalOrdinateursEl = document.getElementById('total-ordinateurs');
+    const equipementsAudiovisuelsEl = document.getElementById('equipements-audiovisuels');
+    const niveauConnectiviteEl = document.getElementById('niveau-connectivite');
+    const ratioEleveOrdinateurEl = document.getElementById('ratio-eleve-ordinateur');
+    const tauxUtilisationEl = document.getElementById('taux-utilisation');
+    
+    if (totalOrdinateursEl) totalOrdinateursEl.textContent = totalOrdinateurs;
+    if (equipementsAudiovisuelsEl) equipementsAudiovisuelsEl.textContent = equipementsAudiovisuels;
+    if (niveauConnectiviteEl) niveauConnectiviteEl.textContent = niveauConnectivite;
+    if (ratioEleveOrdinateurEl) ratioEleveOrdinateurEl.textContent = ratioEleveOrdinateur + ':1';
+    if (tauxUtilisationEl) tauxUtilisationEl.textContent = tauxUtilisation + '%';
 }
 
 // Fonction de scroll spy pour l'Étape 6
@@ -4884,73 +4917,45 @@ function validateEquipementsInformatiques() {
 
 <!-- Modal de Soumission du Rapport -->
 @if($rapport->statut === 'brouillon' || $rapport->statut === 'rejeté')
-<div id="submitModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
-    <div class="bg-white rounded-lg shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-        <div class="bg-gradient-to-r from-emerald-600 to-green-600 text-white px-6 py-4 rounded-t-lg">
-            <h3 class="text-2xl font-bold flex items-center gap-3">
-                <i class="fas fa-paper-plane"></i>
-                <span>Soumettre le Rapport de Rentrée</span>
-            </h3>
-            <p class="text-emerald-100 mt-1">Année Scolaire {{ $rapport->annee_scolaire }}</p>
+<div id="submitModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden" onclick="if(event.target === this) hideSubmitModal()">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 w-full mx-4" style="max-width: 500px;">
+        <!-- Header -->
+        <div class="border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+            <h3 class="font-bold text-gray-800 text-sm">Soumettre le Rapport</h3>
+            <button onclick="hideSubmitModal()" class="text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
 
-        <div class="p-6">
-            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
-                <div class="flex items-start">
-                    <i class="fas fa-info-circle text-blue-500 text-xl mt-1 mr-3"></i>
-                    <div>
-                        <p class="font-semibold text-blue-900 mb-2">Important :</p>
-                        <ul class="text-sm text-blue-800 space-y-1">
-                            <li>• Une fois soumis, le rapport ne pourra plus être modifié</li>
-                            <li>• Votre rapport sera examiné par l'administration</li>
-                            <li>• Vous recevrez une notification de validation ou de rejet</li>
-                            <li>• En cas de rejet, vous pourrez le modifier à nouveau</li>
-                        </ul>
-                    </div>
-                </div>
+        <form id="submitRapportForm" class="p-4">
+            <!-- Commentaire -->
+            <div class="mb-4">
+                <label class="block text-xs font-medium text-gray-700 mb-1">
+                    Commentaire (optionnel)
+                </label>
+                <textarea 
+                    id="commentaire_etablissement" 
+                    name="commentaire_etablissement" 
+                    rows="3" 
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none"
+                    placeholder="Ajoutez une observation..." 
+                    maxlength="500"></textarea>
             </div>
 
-            <form id="submitRapportForm">
-                <div class="mb-6">
-                    <label for="commentaire_etablissement" class="block text-sm font-medium text-gray-700 mb-2">
-                        Commentaire (Optionnel)
-                    </label>
-                    <textarea 
-                        id="commentaire_etablissement" 
-                        name="commentaire_etablissement" 
-                        rows="5" 
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
-                        placeholder="Ajoutez un commentaire ou des observations sur ce rapport..." 
-                        maxlength="1000"></textarea>
-                    <p class="text-xs text-gray-500 mt-1">Maximum 1000 caractères</p>
-                </div>
-
-                <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 mb-6">
-                    <div class="flex items-start">
-                        <i class="fas fa-exclamation-triangle text-yellow-600 text-lg mt-1 mr-3"></i>
-                        <div class="text-sm text-yellow-800">
-                            <p class="font-semibold mb-1">Vérification finale</p>
-                            <p>Assurez-vous que toutes les informations saisies sont exactes et complètes avant de soumettre.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex justify-end gap-3">
-                    <button type="button" 
-                            onclick="hideSubmitModal()" 
-                            class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-medium">
-                        <i class="fas fa-times mr-2"></i>
-                        Annuler
-                    </button>
-                    <button type="submit" 
-                            id="btnConfirmSubmit"
-                            class="px-8 py-3 bg-gradient-to-r from-emerald-600 to-green-600 text-white rounded-lg hover:from-emerald-700 hover:to-green-700 transition font-bold shadow-lg">
-                        <i class="fas fa-check-circle mr-2"></i>
-                        Confirmer la Soumission
-                    </button>
-                </div>
-            </form>
-        </div>
+            <!-- Buttons -->
+            <div class="flex justify-end gap-2">
+                <button type="button" 
+                        onclick="hideSubmitModal()" 
+                        class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition text-sm font-semibold">
+                    Annuler
+                </button>
+                <button type="submit" 
+                        id="btnConfirmSubmit"
+                        class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition text-sm font-semibold">
+                    Confirmer
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 @endif
@@ -4972,14 +4977,19 @@ document.getElementById('submitRapportForm')?.addEventListener('submit', async f
     const btn = document.getElementById('btnConfirmSubmit');
     const originalText = btn.innerHTML;
     btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Soumission en cours...';
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Soumission...';
 
     try {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]');
+        if (!csrfToken) {
+            throw new Error('Token CSRF manquant');
+        }
+
         const response = await fetch(`/etablissement/rapport-rentree/{{ $rapport->id }}/submit`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                'X-CSRF-TOKEN': csrfToken.content
             },
             body: JSON.stringify({
                 commentaire_etablissement: document.getElementById('commentaire_etablissement').value
@@ -4989,45 +4999,206 @@ document.getElementById('submitRapportForm')?.addEventListener('submit', async f
         const data = await response.json();
 
         if (data.success) {
-            // Notification de succès
-            Swal.fire({
-                title: 'Rapport Soumis !',
-                html: `
-                    <div class="text-left">
-                        <p class="mb-3">${data.message}</p>
-                        <div class="bg-green-50 border border-green-200 rounded p-3">
-                            <p class="text-sm text-green-800">
-                                <i class="fas fa-check-circle mr-2"></i>
-                                Votre rapport a été transmis à l'administration pour validation.
-                            </p>
-                        </div>
-                    </div>
-                `,
-                icon: 'success',
-                confirmButtonText: 'Voir l\'historique',
-                confirmButtonColor: '#059669'
-            }).then((result) => {
-                if (result.isConfirmed && data.redirect) {
-                    window.location.href = data.redirect;
-                } else {
-                    window.location.reload();
-                }
-            });
+            hideSubmitModal();
+            alert('✅ Rapport soumis avec succès !\n\nVotre rapport a été transmis à l\'administration pour validation.');
+            if (data.redirect) {
+                window.location.href = data.redirect;
+            } else {
+                window.location.reload();
+            }
         } else {
             throw new Error(data.message || 'Erreur lors de la soumission');
         }
     } catch (error) {
         console.error('Erreur:', error);
-        Swal.fire({
-            title: 'Erreur',
-            text: error.message || 'Une erreur est survenue lors de la soumission du rapport',
-            icon: 'error',
-            confirmButtonColor: '#dc2626'
-        });
+        alert('❌ Erreur\n\n' + (error.message || 'Une erreur est survenue lors de la soumission du rapport'));
         btn.disabled = false;
         btn.innerHTML = originalText;
     }
 });
+
+// =================== SYSTÈME DE VALIDATION ET ACTIVATION DU BOUTON SOUMETTRE ===================
+
+/**
+ * Vérifie la complétion d'une section basée sur ses champs remplis
+ */
+function checkSectionCompletion(sectionId, requiredFields = 1) {
+    const section = document.getElementById(sectionId);
+    if (!section) return false;
+    
+    const inputs = section.querySelectorAll('input:not([type="hidden"]):not([type="button"]), select:not([readonly]), textarea:not([readonly])');
+    let filledCount = 0;
+    
+    inputs.forEach(input => {
+        if (input.disabled) return; // Ignorer les champs désactivés
+        
+        if (input.type === 'checkbox') {
+            if (input.checked) filledCount++;
+        } else if (input.type === 'radio') {
+            if (input.checked) filledCount++;
+        } else if (input.value && input.value.trim() !== '' && input.value !== '0') {
+            filledCount++;
+        }
+    });
+    
+    return filledCount >= requiredFields;
+}
+
+/**
+ * Vérifie toutes les sections et retourne un objet de progression
+ */
+function checkAllSectionsCompletion() {
+    const sections = {
+        // ÉTAPE 1 - Informations Générales (5 sous-sections)
+        'info-directeur': { name: 'Info Directeur', checkId: 'check-info-directeur', required: 2 },
+        'infrastructures': { name: 'Infrastructures', checkId: 'check-infrastructures', required: 1 },
+        'structures': { name: 'Structures Communautaires', checkId: 'check-structures', required: 1 },
+        'langues': { name: 'Langues & Projets', checkId: 'check-langues', required: 1 },
+        'finances': { name: 'Ressources Financières', checkId: 'check-finances', required: 1 },
+        
+        // ÉTAPE 2 - Effectifs (6 sous-sections)
+        'nb-classes': { name: 'Nombre de Classes', checkId: 'check-nb-classes', required: 1 },
+        'effectifs-totaux': { name: 'Effectifs Totaux', checkId: 'check-effectifs-totaux', required: 3 },
+        'redoublants': { name: 'Redoublants', checkId: 'check-redoublants', required: 1 },
+        'abandons': { name: 'Abandons', checkId: 'check-abandons', required: 1 },
+        'handicaps': { name: 'Handicaps', checkId: 'check-handicaps', required: 1 },
+        'situations-speciales': { name: 'Situations Spéciales', checkId: 'check-situations-speciales', required: 1 },
+        
+        // ÉTAPE 3 - Examens (4 sous-sections)
+        'cmg': { name: 'CMG', checkId: 'check-cmg', required: 1 },
+        'cfee': { name: 'CFEE', checkId: 'check-cfee', required: 2 },
+        'entree-sixieme': { name: 'Entrée 6ème', checkId: 'check-entree-sixieme', required: 2 },
+        'recrutement-ci': { name: 'Recrutement CI', checkId: 'check-recrutement-ci', required: 1 },
+        
+        // ÉTAPE 4 - Personnel (5 sous-sections)
+        'repartition-specialite': { name: 'Répartition Spécialité', checkId: 'check-repartition-specialite', required: 2 },
+        'repartition-corps': { name: 'Répartition Corps', checkId: 'check-repartition-corps', required: 1 },
+        'repartition-diplomes': { name: 'Répartition Diplômes', checkId: 'check-repartition-diplomes', required: 1 },
+        'competences-tic': { name: 'Compétences TIC', checkId: 'check-competences-tic', required: 1 },
+        'statistiques-personnel': { name: 'Statistiques Personnel', checkId: 'check-statistiques-personnel', required: 1 },
+        
+        // ÉTAPE 5 - Matériel Pédagogique (4 sous-sections)
+        'manuels-eleves': { name: 'Manuels Élèves', checkId: 'check-manuels-eleves', required: 3 },
+        'manuels-maitre': { name: 'Manuels Maître', checkId: 'check-manuels-maitre', required: 2 },
+        'dictionnaires': { name: 'Dictionnaires', checkId: 'check-dictionnaires', required: 1 },
+        'materiel-didactique': { name: 'Matériel Didactique', checkId: 'check-materiel-didactique', required: 2 },
+        
+        // ÉTAPE 6 - Infrastructure (3 sous-sections)
+        'capital-immobilier': { name: 'Capital Immobilier', checkId: 'check-capital-immobilier', required: 2 },
+        'capital-mobilier': { name: 'Capital Mobilier', checkId: 'check-capital-mobilier', required: 2 },
+        'equipements-informatiques': { name: 'Équipements Informatiques', checkId: 'check-equipements-informatiques', required: 1 }
+    };
+    
+    let totalSections = Object.keys(sections).length;
+    let completedSections = 0;
+    let incompleteSections = [];
+    
+    // Vérifier chaque section
+    for (const [sectionId, config] of Object.entries(sections)) {
+        const isComplete = checkSectionCompletion(sectionId, config.required);
+        
+        // Mettre à jour la coche visuelle
+        const checkIcon = document.getElementById(config.checkId);
+        if (checkIcon) {
+            if (isComplete) {
+                checkIcon.classList.remove('hidden');
+                completedSections++;
+            } else {
+                checkIcon.classList.add('hidden');
+                incompleteSections.push(config.name);
+            }
+        }
+    }
+    
+    const percentage = Math.round((completedSections / totalSections) * 100);
+    
+    return {
+        total: totalSections,
+        completed: completedSections,
+        percentage: percentage,
+        incomplete: incompleteSections,
+        canSubmit: percentage >= 50 // Au moins 50% de complétion pour soumettre
+    };
+}
+
+/**
+ * Met à jour l'état du bouton de soumission
+ */
+function updateSubmitButton() {
+    const btn = document.getElementById('btnSubmitRapport');
+    const progressText = document.getElementById('completion-progress');
+    const completionText = document.getElementById('completion-text');
+    
+    if (!btn) return;
+    
+    const status = checkAllSectionsCompletion();
+    
+    // Mettre à jour le pourcentage
+    if (progressText) {
+        progressText.textContent = status.percentage + '%';
+        progressText.className = status.percentage >= 50 ? 'font-semibold text-emerald-600' : 'font-semibold text-amber-600';
+    }
+    
+    // Mettre à jour le texte
+    if (completionText) {
+        if (status.canSubmit) {
+            completionText.textContent = '✓ Rapport prêt à être soumis';
+            completionText.className = 'text-emerald-600 font-medium';
+        } else {
+            completionText.textContent = `${status.completed}/${status.total} sections complétées`;
+        }
+    }
+    
+    // Activer/désactiver le bouton
+    if (status.canSubmit) {
+        btn.disabled = false;
+        btn.className = 'px-6 py-2 bg-emerald-600 text-white rounded-lg text-sm font-semibold hover:bg-emerald-700 transition cursor-pointer';
+        btn.title = 'Cliquez pour soumettre votre rapport';
+    } else {
+        btn.disabled = true;
+        btn.className = 'px-6 py-2 bg-gray-300 text-gray-500 rounded-lg text-sm font-semibold cursor-not-allowed transition';
+        btn.title = `Complétez au moins 50% des sections pour soumettre (actuellement ${status.percentage}%)`;
+    }
+    
+    console.log('📊 Progression du rapport:', status);
+}
+
+/**
+ * Attacher les événements de vérification sur tous les champs
+ */
+function attachValidationListeners() {
+    const allInputs = document.querySelectorAll('input, select, textarea');
+    
+    allInputs.forEach(input => {
+        // Événements pour tous les types de champs
+        input.addEventListener('change', () => {
+            setTimeout(updateSubmitButton, 300); // Délai pour laisser la sauvegarde AJAX se terminer
+        });
+        
+        input.addEventListener('blur', () => {
+            setTimeout(updateSubmitButton, 300);
+        });
+    });
+    
+    console.log('✅ Écouteurs de validation attachés sur', allInputs.length, 'champs');
+}
+
+// Initialiser le système de validation au chargement de la page
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Initialisation du système de validation du rapport...');
+    
+    // Attacher les écouteurs
+    attachValidationListeners();
+    
+    // Vérification initiale
+    setTimeout(updateSubmitButton, 1000); // Délai pour laisser le temps aux données de se charger
+    
+    // Vérification périodique toutes les 30 secondes
+    setInterval(updateSubmitButton, 30000);
+});
+
+// =================== FIN SYSTÈME DE VALIDATION ===================
+
 </script>
 
 @endpush

@@ -6,8 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Rapport;
 use App\Models\Etablissement;
 use App\Models\AnneeScolaire;
+use App\Services\RapportExcelTemplateService;
+use App\Services\RapportExcelImportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class SuiviRapportController extends Controller
 {
@@ -16,16 +19,29 @@ class SuiviRapportController extends Controller
      */
     public function index(Request $request)
     {
+        // Récupérer toutes les années disponibles
+        $anneesDisponibles = AnneeScolaire::orderBy('annee', 'desc')->get();
+        
         // Récupérer l'année scolaire active
         $anneeActive = AnneeScolaire::getActive();
         
-        if (!$anneeActive) {
-            return back()->with('error', 'Aucune année scolaire n\'est activée. Veuillez activer une année dans la gestion des années scolaires.');
+        // Déterminer l'année à afficher (filtrée ou active par défaut)
+        $anneeSelectionnee = $request->get('annee', $anneeActive?->annee);
+        
+        if (!$anneeSelectionnee) {
+            return back()->with('error', 'Aucune année scolaire disponible. Veuillez créer une année dans la gestion des années scolaires.');
         }
 
-        $query = Etablissement::with(['rapports' => function($q) use ($anneeActive) {
-            $q->where('annee_scolaire', $anneeActive->annee)
-              ->with([
+        // Construire la query des rapports avec eager loading
+        $query = Etablissement::with(['rapports' => function($q) use ($anneeSelectionnee, $request) {
+            $q->where('annee_scolaire', $anneeSelectionnee);
+            
+            // Si un statut est filtré, ne charger que les rapports avec ce statut
+            if ($request->filled('statut_rapport')) {
+                $q->where('statut', $request->statut_rapport);
+            }
+            
+            $q->with([
                 'infoDirecteur',
                 'infrastructuresBase',
                 'structuresCommunautaires',
@@ -45,7 +61,16 @@ class SuiviRapportController extends Controller
                 'capitalMobilier',
                 'equipementInformatique'
             ])->latest();
-        }]);
+        }])
+        // Filtrer seulement les établissements qui ONT un rapport pour l'année sélectionnée
+        ->whereHas('rapports', function($q) use ($anneeSelectionnee, $request) {
+            $q->where('annee_scolaire', $anneeSelectionnee);
+            
+            // Appliquer le filtre de statut si présent
+            if ($request->filled('statut_rapport')) {
+                $q->where('statut', $request->statut_rapport);
+            }
+        });
 
         // Filtres
         if ($request->filled('search')) {
@@ -64,11 +89,7 @@ class SuiviRapportController extends Controller
             $query->where('zone', $request->zone);
         }
 
-        if ($request->filled('statut_rapport')) {
-            $query->whereHas('rapports', function($q) use ($request) {
-                $q->where('statut', $request->statut_rapport);
-            });
-        }
+        // Le filtre de statut est déjà appliqué dans le whereHas ci-dessus
 
         $etablissements = $query->orderBy('etablissement')->paginate(20)->withQueryString();
 
@@ -80,36 +101,189 @@ class SuiviRapportController extends Controller
             }
         }
 
-        // Statistiques globales
+        // Statistiques globales pour l'année sélectionnée
         $stats = [
             'total' => Etablissement::count(),
-            'avec_rapport' => Etablissement::whereHas('rapports', function($q) use ($anneeActive) {
-                $q->where('annee_scolaire', $anneeActive->annee);
+            'avec_rapport' => Etablissement::whereHas('rapports', function($q) use ($anneeSelectionnee) {
+                $q->where('annee_scolaire', $anneeSelectionnee);
             })->count(),
-            'sans_rapport' => Etablissement::whereDoesntHave('rapports', function($q) use ($anneeActive) {
-                $q->where('annee_scolaire', $anneeActive->annee);
+            'sans_rapport' => Etablissement::whereDoesntHave('rapports', function($q) use ($anneeSelectionnee) {
+                $q->where('annee_scolaire', $anneeSelectionnee);
             })->count(),
-            'brouillons' => Rapport::where('annee_scolaire', $anneeActive->annee)->where('statut', 'brouillon')->count(),
-            'soumis' => Rapport::where('annee_scolaire', $anneeActive->annee)->where('statut', 'soumis')->count(),
-            'valides' => Rapport::where('annee_scolaire', $anneeActive->annee)->where('statut', 'valide')->count(),
-            'rejetes' => Rapport::where('annee_scolaire', $anneeActive->annee)->where('statut', 'rejete')->count(),
+            'brouillons' => Rapport::where('annee_scolaire', $anneeSelectionnee)->where('statut', 'brouillon')->count(),
+            'soumis' => Rapport::where('annee_scolaire', $anneeSelectionnee)->where('statut', 'soumis')->count(),
+            'valides' => Rapport::where('annee_scolaire', $anneeSelectionnee)->where('statut', 'validé')->count(),
+            'rejetes' => Rapport::where('annee_scolaire', $anneeSelectionnee)->where('statut', 'rejeté')->count(),
         ];
 
-        // Listes pour les filtres
+        // Listes pour les filtres (basées sur l'année sélectionnée ET les filtres actifs)
+        // Ces listes montrent uniquement les options disponibles selon les filtres déjà appliqués
+        $listsQuery = Etablissement::whereHas('rapports', function($q) use ($anneeSelectionnee, $request) {
+            $q->where('annee_scolaire', $anneeSelectionnee);
+            
+            // Appliquer le filtre de statut si présent
+            if ($request->filled('statut_rapport')) {
+                $q->where('statut', $request->statut_rapport);
+            }
+        });
+        
+        // Appliquer les filtres existants pour affiner les listes
+        if ($request->filled('commune')) {
+            $listsQueryWithCommune = clone $listsQuery;
+            $listsQueryWithCommune->where('commune', $request->commune);
+        }
+        
+        if ($request->filled('zone')) {
+            $listsQueryWithZone = clone $listsQuery;
+            $listsQueryWithZone->where('zone', $request->zone);
+        }
+
         $lists = [
-            'communes' => Etablissement::whereNotNull('commune')
+            'communes' => (clone $listsQuery)
+                ->whereNotNull('commune')
                 ->distinct()
                 ->orderBy('commune')
                 ->pluck('commune')
                 ->toArray(),
-            'zones' => Etablissement::whereNotNull('zone')
+            'zones' => (clone $listsQuery)
+                ->whereNotNull('zone')
                 ->distinct()
                 ->orderBy('zone')
                 ->pluck('zone')
+                ->toArray(),
+            'statuts' => Rapport::where('annee_scolaire', $anneeSelectionnee)
+                ->when($request->filled('commune'), function($q) use ($request) {
+                    $q->whereHas('etablissement', function($eq) use ($request) {
+                        $eq->where('commune', $request->commune);
+                    });
+                })
+                ->when($request->filled('zone'), function($q) use ($request) {
+                    $q->whereHas('etablissement', function($eq) use ($request) {
+                        $eq->where('zone', $request->zone);
+                    });
+                })
+                ->distinct()
+                ->pluck('statut')
                 ->toArray()
         ];
 
-        return view('admin.suivi-rapports.index', compact('etablissements', 'stats', 'lists', 'anneeActive'));
+        return view('admin.suivi-rapports.index', compact('etablissements', 'stats', 'lists', 'anneesDisponibles', 'anneeSelectionnee', 'anneeActive'));
+    }
+
+    /**
+     * Télécharger le template Excel vierge pour import de rapports
+     */
+    public function downloadExcelTemplate()
+    {
+        \Log::info('=== DOWNLOAD TEMPLATE START ===');
+        \Log::info('Request URL: ' . request()->fullUrl());
+        \Log::info('Request method: ' . request()->method());
+        
+        try {
+            \Log::info('Creating RapportExcelTemplateService...');
+            $service = new RapportExcelTemplateService();
+            
+            \Log::info('Calling generateTemplate()...');
+            $service->generateTemplate();
+            \Log::info('Template generated successfully');
+            
+            $filename = 'template_rapport_rentree_' . date('Y-m-d') . '.xlsx';
+            \Log::info('Filename: ' . $filename);
+            
+            // Vérifier le répertoire temporaire
+            $tempDir = sys_get_temp_dir();
+            \Log::info('Temp directory: ' . $tempDir);
+            \Log::info('Temp directory writable: ' . (is_writable($tempDir) ? 'YES' : 'NO'));
+            
+            \Log::info('Calling downloadTemplate()...');
+            $response = $service->downloadTemplate($filename);
+            \Log::info('Download response created successfully');
+            \Log::info('Response type: ' . get_class($response));
+            
+            return $response;
+        } catch (\Exception $e) {
+            \Log::error('=== DOWNLOAD TEMPLATE ERROR ===');
+            \Log::error('Erreur génération template Excel', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return back()->with('error', 'Erreur lors de la génération du template : ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Importer des rapports depuis un fichier Excel
+     */
+    public function importExcel(Request $request)
+    {
+        try {
+            // Validation du fichier
+            $request->validate([
+                'excel_file' => 'required|file|mimes:xlsx,xls|max:10240', // 10 MB max
+                'etablissement_id' => 'required|exists:etablissements,id',
+                'annee_scolaire' => 'required|string'
+            ], [
+                'excel_file.required' => 'Veuillez sélectionner un fichier Excel.',
+                'excel_file.mimes' => 'Le fichier doit être au format Excel (.xlsx ou .xls).',
+                'excel_file.max' => 'Le fichier ne doit pas dépasser 10 Mo.',
+                'etablissement_id.required' => 'Veuillez sélectionner un établissement.',
+                'etablissement_id.exists' => 'L\'établissement sélectionné n\'existe pas.',
+                'annee_scolaire.required' => 'Veuillez sélectionner une année scolaire.'
+            ]);
+            
+            Log::info('=== IMPORT EXCEL DÉMARRÉ ===', [
+                'etablissement_id' => $request->etablissement_id,
+                'annee_scolaire' => $request->annee_scolaire,
+                'fichier' => $request->file('excel_file')->getClientOriginalName()
+            ]);
+            
+            // Récupérer le fichier uploadé
+            $file = $request->file('excel_file');
+            $filePath = $file->getRealPath();
+            
+            // Importer via le service
+            $importService = new RapportExcelImportService();
+            $result = $importService->importFromExcel(
+                $filePath,
+                $request->etablissement_id,
+                $request->annee_scolaire
+            );
+            
+            if ($result['success']) {
+                $message = 'Import réussi ! Le rapport a été créé avec succès.';
+                
+                if (count($result['warnings']) > 0) {
+                    $message .= ' (' . count($result['warnings']) . ' avertissement(s) détecté(s))';
+                }
+                
+                Log::info('Import Excel réussi', [
+                    'rapport_id' => $result['rapport']->id,
+                    'warnings_count' => count($result['warnings'])
+                ]);
+                
+                return back()->with('success', $message)
+                            ->with('warnings', $result['warnings']);
+            } else {
+                Log::error('Import Excel échoué', ['erreurs' => $result['errors']]);
+                
+                return back()->with('error', 'Erreurs lors de l\'import :')
+                            ->with('import_errors', $result['errors'])
+                            ->with('warnings', $result['warnings']);
+            }
+            
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return back()->withErrors($e->validator)->withInput();
+        } catch (\Exception $e) {
+            Log::error('Erreur import Excel', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return back()->with('error', 'Erreur lors de l\'import : ' . $e->getMessage());
+        }
     }
 
     /**

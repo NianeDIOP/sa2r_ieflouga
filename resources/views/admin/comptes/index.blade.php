@@ -197,10 +197,14 @@
                             </td>
                             <td class="px-4 py-3">
                                 <div class="flex flex-col">
-                                    <span class="text-xs text-gray-900">{{ $compte->directeur_nom ?? '—' }}</span>
-                                    @if($compte->directeur_telephone)
-                                        <a href="tel:{{ $compte->directeur_telephone }}" class="text-xs text-blue-600 hover:underline">
-                                            <i class="fas fa-phone text-[10px] mr-1"></i>{{ $compte->directeur_telephone }}
+                                    @php
+                                        $rapport = $compte->etablissement->rapports()->where('annee_scolaire', '2024-2025')->first();
+                                        $infoDirecteur = $rapport?->infoDirecteur;
+                                    @endphp
+                                    <span class="text-xs text-gray-900">{{ $infoDirecteur?->directeur_nom ?? '—' }}</span>
+                                    @if($infoDirecteur?->directeur_contact_1)
+                                        <a href="tel:{{ $infoDirecteur->directeur_contact_1 }}" class="text-xs text-blue-600 hover:underline">
+                                            <i class="fas fa-phone text-[10px] mr-1"></i>{{ $infoDirecteur->directeur_contact_1 }}
                                         </a>
                                     @endif
                                 </div>
@@ -226,7 +230,11 @@
                             </td>
                             <td class="px-4 py-3">
                                 <div class="flex items-center justify-center gap-1">
-                                    <button onclick="openEditDirecteurModal({{ $compte->id }}, '{{ addslashes($compte->directeur_nom) }}', '{{ addslashes($compte->directeur_telephone) }}')" type="button"
+                                    @php
+                                        $rapport = $compte->etablissement->rapports()->where('annee_scolaire', '2024-2025')->first();
+                                        $infoDirecteur = $rapport?->infoDirecteur;
+                                    @endphp
+                                    <button onclick="openEditDirecteurModal({{ $compte->id }}, '{{ addslashes($infoDirecteur?->directeur_nom ?? '') }}', '{{ addslashes($infoDirecteur?->directeur_contact_1 ?? '') }}')" type="button"
                                             class="p-1.5 text-purple-600 hover:bg-purple-50 rounded transition-colors"
                                             title="Modifier infos directeur">
                                         <i class="fas fa-user-edit text-sm"></i>

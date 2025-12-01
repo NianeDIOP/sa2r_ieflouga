@@ -19,16 +19,23 @@ class CompteController extends Controller
     public function index(Request $request)
     {
         $query = User::where('type', 'etablissement')
-            ->with('etablissement');
+            ->with([
+                'etablissement.rapports' => function($q) {
+                    $q->where('annee_scolaire', '2024-2025')
+                      ->with('infoDirecteur');
+                }
+            ]);
         
         // Filtre de recherche
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('code', 'like', "%{$search}%")
-                  ->orWhere('directeur_nom', 'like', "%{$search}%")
                   ->orWhereHas('etablissement', function($sq) use ($search) {
                       $sq->where('etablissement', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('etablissement.rapports.infoDirecteur', function($sq) use ($search) {
+                      $sq->where('directeur_nom', 'like', "%{$search}%");
                   });
             });
         }

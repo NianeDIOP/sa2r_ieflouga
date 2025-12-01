@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\AnneeScolaireController;
 use App\Http\Controllers\Admin\EtablissementController;
 use App\Http\Controllers\Admin\CompteController;
 use App\Http\Controllers\Admin\SuiviRapportController;
+use App\Http\Controllers\Admin\ControleQualiteController;
 use App\Http\Controllers\Etablissement\DashboardController as EtablissementDashboardController;
 
 // ============================================
@@ -29,6 +30,7 @@ Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::prefix('admin')->name('admin.')->middleware('auth:admin')->group(function () {
     Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::get('dashboard/zone-etablissements', [AdminDashboardController::class, 'getEtablissementsZone'])->name('dashboard.zone-etablissements');
     
     // Années Scolaires
     Route::resource('annees-scolaires', AnneeScolaireController::class);
@@ -65,11 +67,19 @@ Route::prefix('admin')->name('admin.')->middleware('auth:admin')->group(function
     
     // Suivi des Rapports
     Route::get('suivi-rapports', [SuiviRapportController::class, 'index'])->name('suivi-rapports.index');
+    Route::get('suivi-rapports/template-excel/download', [SuiviRapportController::class, 'downloadExcelTemplate'])
+        ->name('suivi-rapports.template-excel');
+    Route::post('suivi-rapports/import-excel', [SuiviRapportController::class, 'importExcel'])
+        ->name('suivi-rapports.import-excel');
     Route::get('suivi-rapports/{rapport}', [SuiviRapportController::class, 'show'])->name('suivi-rapports.show');
     Route::post('suivi-rapports/{rapport}/valider', [SuiviRapportController::class, 'valider'])
         ->name('suivi-rapports.valider');
     Route::post('suivi-rapports/{rapport}/rejeter', [SuiviRapportController::class, 'rejeter'])
         ->name('suivi-rapports.rejeter');
+    
+    // Contrôle & Validation de Qualité (fusion de 3 liens)
+    Route::get('controle-qualite', [ControleQualiteController::class, 'index'])->name('controle-qualite.index');
+    Route::get('controle-qualite/{rapport}', [ControleQualiteController::class, 'show'])->name('controle-qualite.show');
     
     // Autres routes admin à ajouter ici
     // Route::get('import', [AdminImportController::class, 'index'])->name('import');
@@ -82,6 +92,11 @@ Route::prefix('admin')->name('admin.')->middleware('auth:admin')->group(function
 
 Route::prefix('etablissement')->name('etablissement.')->middleware('auth:etablissement')->group(function () {
     Route::get('dashboard', [EtablissementDashboardController::class, 'index'])->name('dashboard');
+    
+    // Profil
+    Route::get('profil', [\App\Http\Controllers\Etablissement\ProfilController::class, 'index'])->name('profil');
+    Route::post('profil/change-password', [\App\Http\Controllers\Etablissement\ProfilController::class, 'changePassword'])
+        ->name('profil.change-password');
     
     // Rapport de Rentrée
     Route::get('rapport-rentree', [\App\Http\Controllers\Etablissement\RapportRentreeController::class, 'index'])
@@ -166,4 +181,6 @@ Route::prefix('etablissement')->name('etablissement.')->middleware('auth:etablis
         ->name('rapport-rentree.historique.index');
     Route::get('rapport-rentree/historique/{rapport}', [\App\Http\Controllers\Etablissement\RapportHistoriqueController::class, 'show'])
         ->name('rapport-rentree.historique.show');
+    Route::get('rapport-rentree/historique/{rapport}/excel', [\App\Http\Controllers\Etablissement\RapportHistoriqueController::class, 'downloadExcel'])
+        ->name('rapport-rentree.historique.excel');
 });

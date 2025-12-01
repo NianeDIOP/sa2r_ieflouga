@@ -1,0 +1,1 @@
+This is a backup of the original show.blade.php file before complete rewrite

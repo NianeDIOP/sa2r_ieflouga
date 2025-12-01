@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'SA2R - Établissement')</title>
     
     <!-- Tailwind CSS CDN -->
@@ -10,6 +11,20 @@
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
+    <style>
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+        .animate-shimmer {
+            animation: shimmer 3s infinite;
+        }
+    </style>
     
     @stack('styles')
 </head>
@@ -53,13 +68,13 @@
                     </a>
                     
                     <a href="{{ route('etablissement.rapport-rentree.index') }}" 
-                       class="flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-bold transition-all duration-200 {{ request()->routeIs('etablissement.rapport-rentree.*') ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300' }}">
+                       class="flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-bold transition-all duration-200 {{ request()->routeIs('etablissement.rapport-rentree.index') ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300' }}">
                         <i class="fas fa-file-alt text-xs"></i>
                         <span>Rapport de Rentrée</span>
                     </a>
                     
-                    <a href="#" 
-                       class="flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 text-blue-100 hover:bg-white/10 hover:text-white">
+                    <a href="{{ route('etablissement.rapport-rentree.historique.index') }}" 
+                       class="flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 {{ request()->routeIs('etablissement.rapport-rentree.historique.*') ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'text-blue-100 hover:bg-white/10 hover:text-white' }}">
                         <i class="fas fa-history text-xs"></i>
                         <span>Historique</span>
                     </a>
@@ -85,7 +100,7 @@
                         
                         <!-- Dropdown -->
                         <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                            <a href="#" class="flex items-center space-x-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-t-lg">
+                            <a href="{{ route('etablissement.profil') }}" class="flex items-center space-x-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-t-lg">
                                 <i class="fas fa-user text-gray-400 text-xs w-4"></i>
                                 <span>Mon Profil</span>
                             </a>
@@ -108,7 +123,7 @@
         
         <!-- Contenu Principal -->
         <main class="flex-1 overflow-x-hidden">
-            <div class="max-w-[1400px] mx-auto p-4 sm:p-6">
+            <div class="max-w-full mx-auto p-4 sm:p-6">
                 
                 <!-- Messages Flash -->
                 @if(session('success'))

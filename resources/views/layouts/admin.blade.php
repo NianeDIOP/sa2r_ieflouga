@@ -9,8 +9,15 @@
     <!-- Tailwind CSS CDN - MÊME FRAMEWORK QU'AVANT -->
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
     <!-- Font Awesome - MÊMES ICÔNES -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
     
     @stack('styles')
 </head>
@@ -125,33 +132,20 @@
                                 </div>
                             </a>
                             
-                            <!-- 4. Contrôle Qualité -->
-                            <a href="#" class="block px-4 py-2.5 hover:bg-blue-50 transition-colors">
+                            <!-- 4. Contrôle & Validation (fusion de 3 liens) -->
+                            <a href="{{ route('admin.controle-qualite.index') }}" class="block px-4 py-2.5 hover:bg-blue-50 transition-colors">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center">
-                                        <i class="fas fa-check-double text-amber-600 text-sm"></i>
+                                    <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-shield-alt text-emerald-600 text-sm"></i>
                                     </div>
                                     <div>
-                                        <p class="text-sm font-medium text-gray-900">Contrôle Qualité</p>
-                                        <p class="text-xs text-gray-500">Validation des données</p>
+                                        <p class="text-sm font-medium text-gray-900">Contrôle & Validation</p>
+                                        <p class="text-xs text-gray-500">Qualité des données</p>
                                     </div>
                                 </div>
                             </a>
                             
-                            <!-- 5. Qualité des Données -->
-                            <a href="#" class="block px-4 py-2.5 hover:bg-blue-50 transition-colors">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                                        <i class="fas fa-star text-purple-600 text-sm"></i>
-                                    </div>
-                                    <div>
-                                        <p class="text-sm font-medium text-gray-900">Qualité des Données</p>
-                                        <p class="text-xs text-gray-500">Scores par soumission</p>
-                                    </div>
-                                </div>
-                            </a>
-                            
-                            <!-- 6. Années Scolaires -->
+                            <!-- 5. Années Scolaires -->
                             <a href="{{ route('admin.annees-scolaires.index') }}" class="block px-4 py-2.5 hover:bg-blue-50 transition-colors">
                                 <div class="flex items-center gap-3">
                                     <div class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
@@ -160,19 +154,6 @@
                                     <div>
                                         <p class="text-sm font-medium text-gray-900">Années Scolaires</p>
                                         <p class="text-xs text-gray-500">Gestion des années</p>
-                                    </div>
-                                </div>
-                            </a>
-                            
-                            <!-- 7. Vérification Données -->
-                            <a href="#" class="block px-4 py-2.5 hover:bg-blue-50 transition-colors">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 bg-teal-100 rounded-lg flex items-center justify-center">
-                                        <i class="fas fa-search text-teal-600 text-sm"></i>
-                                    </div>
-                                    <div>
-                                        <p class="text-sm font-medium text-gray-900">Vérification Données</p>
-                                        <p class="text-xs text-gray-500">Inspection technique</p>
                                     </div>
                                 </div>
                             </a>

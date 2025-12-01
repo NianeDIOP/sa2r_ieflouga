@@ -24,6 +24,20 @@
             
             <!-- Statut et progression -->
             <div class="flex items-center gap-3">
+                <!-- Actions admin (si soumis) -->
+                @if($rapport->statut === 'soumis')
+                    <button onclick="openValiderModal({{ $rapport->id }})" 
+                            class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-600 text-white text-xs font-semibold rounded-lg hover:bg-green-700 transition">
+                        <i class="fas fa-check-circle"></i>
+                        Valider
+                    </button>
+                    <button onclick="openRejeterModal({{ $rapport->id }})" 
+                            class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-600 text-white text-xs font-semibold rounded-lg hover:bg-red-700 transition">
+                        <i class="fas fa-times-circle"></i>
+                        Rejeter
+                    </button>
+                @endif
+                
                 <!-- Progression -->
                 <div class="text-right">
                     <p class="text-[10px] text-gray-500 mb-0.5">Progression</p>
@@ -340,22 +354,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Actions admin (si soumis) -->
-        @if($rapport->statut === 'soumis')
-            <div class="mt-4 flex gap-3">
-                <button onclick="openValiderModal({{ $rapport->id }})" 
-                        class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 transition">
-                    <i class="fas fa-check-circle"></i>
-                    Valider le rapport
-                </button>
-                <button onclick="openRejeterModal({{ $rapport->id }})" 
-                        class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-red-600 text-white text-sm font-semibold rounded-lg hover:bg-red-700 transition">
-                    <i class="fas fa-times-circle"></i>
-                    Rejeter le rapport
-                </button>
-            </div>
-        @endif
 
 <!-- Modals (Valider/Rejeter) -->
 <div id="validerModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
